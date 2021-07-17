@@ -5,9 +5,11 @@ from schema import schemas
 from models import models
 from fastapi import HTTPException, status
 
+
 def get_all(db: Session):
     blogs = db.query(models.Blog).all()
     return blogs
+
 
 def create(request: schemas.Blog, db: Session):
     new_blog = models.Blog(title=request.title, body=request.body, user_id=1)
@@ -27,10 +29,12 @@ def destroy(id: int, db: Session):
     db.commit()
     return {'done'}
 
+
 def update(id: int, request: schemas.Blog, db: Session):
     blog = db.query(models.Blog).filter(models.Blog.id == id)
     if not blog.first():
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Blog with id {id} not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"Blog with id {id} not found")
     blog.update(request.__dict__)
     db.commit()
     return 'updated'
@@ -41,4 +45,5 @@ def show(id: int, db: Session):
     if blog:
         return blog
     else:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Blog with the id {id} is not available")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"Blog with the id {id} is not available")
