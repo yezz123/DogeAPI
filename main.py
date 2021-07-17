@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 
-import sys
 from fastapi import FastAPI
 from starlette.responses import HTMLResponse
 from models import models
@@ -12,7 +11,7 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="DogeAPI",
-    description="DogeApi Backend",
+    description="API with high performance built with FastAPI & SQLAlchemy, help to improve connection with your Backend Side.",
     version="1.0.0",
 )
 
