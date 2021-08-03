@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="shortcut icon"
+      type="image/icon"
+      href="https://www.yezz.me/assets/css/Ico/icon.png"
+    />
+    <link href="{{ url_for('static', path='/style.css') }}" rel="stylesheet">
+    <title>DogeAPI</title>
+  </head>
+  <body>
+    <div id="container">
+      <a href="/docs">
+        <button class="face-button">
+          <span class="face-container">
+            <span class="eye left"></span>
+            <span class="eye right"></span>
+            <span class="mouth"></span>
+          </span>
+        </button>
+      </a>
+    </div>
+    <script src="{{ url_for('static', path='/main.js') }}">
+    </script>
+  </body>
+</html>
