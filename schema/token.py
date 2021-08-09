@@ -4,17 +4,12 @@ from typing import Optional
 from datetime import timedelta, datetime
 from jose import jwt, JWTError
 from schema.schemas import TokenData
-import os
+from decouple import config
 
-basedir = os.path.abspath(os.path.dirname(__file__))
-
-# to get a string like this run:
 # openssl rand -hex 32
-# get string by reading the README
-SECRET_KEY = str(os.environ.get("SECRET_KEY"))
+SECRET_KEY = config("SECRET_KEY")
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = str(
-    os.environ.get("ACCESS_TOKEN_EXPIRE_MINUTES"))
+ACCESS_TOKEN_EXPIRE_MINUTES = config("ACCESS_TOKEN_EXPIRE_MINUTES", default=60, cast=int)
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
@@ -25,9 +20,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
         expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
 
     to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-
-    return encoded_jwt
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 
 def verify_token(token: str, credentials_exception):

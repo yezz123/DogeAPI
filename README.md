@@ -67,66 +67,32 @@ $ uvicorn main:app
 $ uvicorn main:app --reload
 ```
 
+### Environment variables
+
+- `SECRET_KEY`: A secret key for signing Json Web Token.
+- `SQLALCHEMY_DATABASE_URL`: The database url to connect to the database.
+- `ACCESS_TOKEN_EXPIRE_MINUTES`: The access token expire minutes.
+
+> change all the environment variables in the `.env.sample` and don't forget to rename it to `.env`.
+
 ### Configured Enviromment
-
-#### Database
-
-- To Provide a good and fast work, i choose a `SQLite` Database using `SQLAlchemy`.
-- If you want to configure the Database with an other Provider like `MySQL` or `PostgreSQL` you can change the `Database_URL` here :
-
-```py
-# here you need to inster the  URI that should be used for the connection.
-SQLALCHEMY_DATABASE_URL = 'sqlite:///blog.db'
-```
-
-- For Example :
-
-```py
-SQLALCHEMY_DATABASE_URL = 'mysql://username:password@server/blog'
-```
 
 #### Models
 
 - Here for the [Models.py](models/models.py), i create 2 tables based on the requirements for this project `blogs` and `users`
-
-```py
-class Blog(Base):
-    __tablename__ = "blogs"
-    id = Column(Integer, primary_key=True, index=True)
-    title = Column(String)
-    body = Column(String)
-    user_id = Column(Integer, ForeignKey("users.id"))
-    creator = relationship("User", back_populates="blogs")
-```
-
-```py
-class User(Base):
-    __tablename__ = "users"
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String)
-    email = Column(String)
-    password = Column(String)
-    blogs = relationship("Blog", back_populates="creator")
-```
-
-#### Token
-
-- Set environment variables as the Secret Key and Time Expire for Token, i made it in an easy way to get it.
-- Change the `.env.sample` to `.env` then insert you String `Secret_Key` and `ACCESS_TOKEN_EXPIRE_MINUTES`.
-- you can generate the String using `openssl rand -hex 32`.
 
 ## Running the Docker Container
 
 - We have the Dockerfile created in above section. Now, we will use the Dockerfile to create the image of the FastAPI app and then start the FastAPI app container.
 
 ```sh
-$ docker build
+docker build
 ```
 
 - list all the docker images and you can also see the image `dogeapi:latest` in the list.
 
 ```sh
-$ docker images
+docker images
 ```
 
 - run the application at port 5000. The various options used are:
@@ -138,13 +104,13 @@ $ docker images
 > - `--name`: name of the container
 
 ```sh
-$ docker container run -p 5000:5000 -dit --name DOGEAPI dogeapi:latest
+docker container run -p 5000:5000 -dit --name DOGEAPI dogeapi:latest
 ```
 
 - Check the status of the docker container
 
 ```sh
-$ docker container ps
+docker container ps
 ```
 
 ## Preconfigured Packages
