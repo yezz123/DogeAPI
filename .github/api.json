@@ -1,0 +1,414 @@
+{
+    "openapi": "3.0.2",
+    "info": {
+        "title": "DogeAPI",
+        "description": "API with high performance built with FastAPI & SQLAlchemy, help to improve connection with your Backend Side.",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/blog/": {
+            "get": {
+                "tags": ["Blogs"],
+                "summary": "Get All Blogs",
+                "operationId": "get_all_blogs_blog__get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "title": "Response Get All Blogs Blog  Get",
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ShowBlog"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [{ "OAuth2PasswordBearer": [] }]
+            },
+            "post": {
+                "tags": ["Blogs"],
+                "summary": "Create",
+                "operationId": "create_blog__post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": { "$ref": "#/components/schemas/Blog" }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Successful Response",
+                        "content": { "application/json": { "schema": {} } }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [{ "OAuth2PasswordBearer": [] }]
+            }
+        },
+        "/blog/{id}": {
+            "get": {
+                "tags": ["Blogs"],
+                "summary": "Get Blog By Id",
+                "operationId": "get_blog_by_id_blog__id__get",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": { "title": "Id", "type": "integer" },
+                        "name": "id",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ShowBlog"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [{ "OAuth2PasswordBearer": [] }]
+            },
+            "put": {
+                "tags": ["Blogs"],
+                "summary": "Update Blog",
+                "operationId": "update_blog_blog__id__put",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": { "title": "Id", "type": "integer" },
+                        "name": "id",
+                        "in": "path"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": { "$ref": "#/components/schemas/Blog" }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "202": {
+                        "description": "Successful Response",
+                        "content": { "application/json": { "schema": {} } }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [{ "OAuth2PasswordBearer": [] }]
+            },
+            "delete": {
+                "tags": ["Blogs"],
+                "summary": "Delete Blog",
+                "operationId": "delete_blog_blog__id__delete",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": { "title": "Id", "type": "integer" },
+                        "name": "id",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "204": { "description": "Successful Response" },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [{ "OAuth2PasswordBearer": [] }]
+            }
+        },
+        "/users/": {
+            "get": {
+                "tags": ["Users"],
+                "summary": "Get Users",
+                "operationId": "get_users_users__get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "title": "Response Get Users Users  Get",
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ShowUser"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": ["Users"],
+                "summary": "Create User",
+                "operationId": "create_user_users__post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": { "$ref": "#/components/schemas/User" }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ShowUser"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{id}": {
+            "get": {
+                "tags": ["Users"],
+                "summary": "Get User By Id",
+                "operationId": "get_user_by_id_users__id__get",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": { "title": "Id", "type": "integer" },
+                        "name": "id",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ShowUser"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/login/": {
+            "post": {
+                "tags": ["Authentication"],
+                "summary": "Login",
+                "operationId": "login_login__post",
+                "requestBody": {
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Body_login_login__post"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": { "application/json": { "schema": {} } }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/": {
+            "get": {
+                "summary": "Index",
+                "operationId": "index__get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "text/html": { "schema": { "type": "string" } }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Blog": {
+                "title": "Blog",
+                "required": ["title", "body"],
+                "type": "object",
+                "properties": {
+                    "title": { "title": "Title", "type": "string" },
+                    "body": { "title": "Body", "type": "string" }
+                }
+            },
+            "Body_login_login__post": {
+                "title": "Body_login_login__post",
+                "required": ["username", "password"],
+                "type": "object",
+                "properties": {
+                    "grant_type": {
+                        "title": "Grant Type",
+                        "pattern": "password",
+                        "type": "string"
+                    },
+                    "username": { "title": "Username", "type": "string" },
+                    "password": { "title": "Password", "type": "string" },
+                    "scope": {
+                        "title": "Scope",
+                        "type": "string",
+                        "default": ""
+                    },
+                    "client_id": { "title": "Client Id", "type": "string" },
+                    "client_secret": {
+                        "title": "Client Secret",
+                        "type": "string"
+                    }
+                }
+            },
+            "HTTPValidationError": {
+                "title": "HTTPValidationError",
+                "type": "object",
+                "properties": {
+                    "detail": {
+                        "title": "Detail",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ValidationError"
+                        }
+                    }
+                }
+            },
+            "ShowBlog": {
+                "title": "ShowBlog",
+                "required": ["title", "body", "creator"],
+                "type": "object",
+                "properties": {
+                    "title": { "title": "Title", "type": "string" },
+                    "body": { "title": "Body", "type": "string" },
+                    "creator": { "$ref": "#/components/schemas/ShowUser" }
+                }
+            },
+            "ShowUser": {
+                "title": "ShowUser",
+                "required": ["name", "email"],
+                "type": "object",
+                "properties": {
+                    "name": { "title": "Name", "type": "string" },
+                    "email": { "title": "Email", "type": "string" },
+                    "blogs": {
+                        "title": "Blogs",
+                        "type": "array",
+                        "items": { "$ref": "#/components/schemas/Blog" },
+                        "default": []
+                    }
+                }
+            },
+            "User": {
+                "title": "User",
+                "required": ["name", "email", "password"],
+                "type": "object",
+                "properties": {
+                    "name": { "title": "Name", "type": "string" },
+                    "email": { "title": "Email", "type": "string" },
+                    "password": { "title": "Password", "type": "string" }
+                }
+            },
+            "ValidationError": {
+                "title": "ValidationError",
+                "required": ["loc", "msg", "type"],
+                "type": "object",
+                "properties": {
+                    "loc": {
+                        "title": "Location",
+                        "type": "array",
+                        "items": { "type": "string" }
+                    },
+                    "msg": { "title": "Message", "type": "string" },
+                    "type": { "title": "Error Type", "type": "string" }
+                }
+            }
+        },
+        "securitySchemes": {
+            "OAuth2PasswordBearer": {
+                "type": "oauth2",
+                "flows": { "password": { "scopes": {}, "tokenUrl": "login" } }
+            }
+        }
+    }
+}
