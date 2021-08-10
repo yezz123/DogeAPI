@@ -61,9 +61,6 @@ $ pipenv install -d
 
 ```sh
 # Running the application using uvicorn
-$ uvicorn main:app
-
-## To run the Application under a reload enviromment use -- reload
 $ uvicorn main:app --reload
 ```
 
