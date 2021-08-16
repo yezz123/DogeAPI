@@ -22,4 +22,4 @@ six==1.16.0
 SQLAlchemy==1.4.22
 starlette==0.14.2
 typing-extensions==3.10.0.0
-uvicorn==0.14.0
+uvicorn==0.15.0
