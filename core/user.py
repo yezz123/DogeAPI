@@ -1,17 +1,15 @@
 #!/usr/bin/python3
 
-from fastapi import APIRouter, Depends, Response, status
-from sqlalchemy.orm import Session
-from schema import schemas
-from models import models
-from database import configuration
 from typing import List
-from api import user
 
-router = APIRouter(
-    tags=["Users"],
-    prefix="/users"
-)
+from fastapi import APIRouter, Depends, status
+from sqlalchemy.orm import Session
+
+from api import user
+from database import configuration
+from schema import schemas
+
+router = APIRouter(tags=["Users"], prefix="/users")
 get_db = configuration.get_db
 
 

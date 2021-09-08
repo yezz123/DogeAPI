@@ -1,8 +1,9 @@
 #!/usr/bin/python3
 
-from database.configuration import Base
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
+
+from database.configuration import Base
 
 
 class Blog(Base):

@@ -1,9 +1,8 @@
 #!/usr/bin/python3
 
-from pydantic import BaseModel
-from typing import Optional, List
+from typing import List, Optional
 
-from pydantic.main import BaseConfig
+from pydantic import BaseModel
 
 
 class BlogBase(BaseModel):
@@ -12,7 +11,7 @@ class BlogBase(BaseModel):
 
 
 class Blog(BlogBase):
-    class Config():
+    class Config:
         orm_mode = True
 
 
@@ -27,7 +26,7 @@ class ShowUser(BaseModel):
     email: str
     blogs: List[Blog] = []
 
-    class Config():
+    class Config:
         orm_mode = True
 
 
@@ -36,7 +35,7 @@ class ShowBlog(BaseModel):
     body: str
     creator: ShowUser
 
-    class Config():
+    class Config:
         orm_mode = True
 
 
