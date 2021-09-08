@@ -1,14 +1,13 @@
 #!/usr/bin/python3
 
 from fastapi import FastAPI, Request
-from starlette.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from starlette.responses import HTMLResponse
 
-from models import models
+from core import auth, blog, user
 from database.configuration import engine
-from core import blog, user, auth
-
+from models import models
 
 models.Base.metadata.create_all(bind=engine)
 

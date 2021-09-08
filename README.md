@@ -7,10 +7,7 @@
    <img src="https://img.shields.io/github/forks/yezz123/DogeAPI"/>
    <img src="https://visitor-badge.laobi.icu/badge?page_id=yezz123.Pretty-Readme">
    <img src="https://img.shields.io/static/v1?label=%F0%9F%8C%9F&message=If%20Useful&style=style=flat&color=BC4E99" alt="Star Badge"/>
-   <a href="https://github.com/yezz123/DogeAPI/actions/workflows/codeql-analysis.yml"><img src="https://github.com/yezz123/DogeAPI/actions/workflows/codeql-analysis.yml/badge.svg?branch=main"/></a>
    <a href="https://github.com/yezz123/DogeAPI/actions/workflows/docker-publish.yml"><img src="https://github.com/yezz123/DogeAPI/actions/workflows/docker-publish.yml/badge.svg?branch=main"/></a>
-   <a href="https://github.com/yezz123/DogeAPI/actions/workflows/docker-image.yml"><img src="https://github.com/yezz123/DogeAPI/actions/workflows/docker-image.yml/badge.svg?branch=main"/></a>
-   <a href="https://github.com/yezz123/DogeAPI/actions/workflows/ossar-analysis.yml"><img src="https://github.com/yezz123/DogeAPI/actions/workflows/ossar-analysis.yml/badge.svg?branch=main"/></a>
 
 </p>
 
@@ -38,21 +35,17 @@ $ cd DogeAPI
 
 ### Creating virtual environment
 
-- Install `pipenv` a global python project `pip install pipenv`
-- Create a `virtual environment` for this project
+- Create a virtual environment using virtualenv.
 
 ```shell
-# creating pipenv environment for python 3
-$ pipenv --three
+# creating virtual environment
+$ virtualenv venv
 
-# activating the pipenv environment
-$ pipenv shell
+# activate virtual environment
+$ source venv/bin/activate
 
-# if you have multiple python 3 versions installed then
-$ pipenv install -d --python 3.8
-
-# install all dependencies (include -d for installing dev dependencies)
-$ pipenv install -d
+# install all dependencies
+$ pip install -r requirements.txt
 ```
 
 ### Running the Application
@@ -81,33 +74,18 @@ $ uvicorn main:app --reload
 ## Running the Docker Container
 
 - We have the Dockerfile created in above section. Now, we will use the Dockerfile to create the image of the FastAPI app and then start the FastAPI app container.
+- Using a preconfigured `Makefile` tor run the Docker Compose:
 
 ```sh
-docker build
-```
+# Pull the latest image
+$ make pull
 
-- list all the docker images and you can also see the image `dogeapi:latest` in the list.
+# Build the image
+$ make build
 
-```sh
-docker images
-```
+# Run the container
+$ make start
 
-- run the application at port 5000. The various options used are:
-
-> - `-p`: publish the container's port to the host port.
-> - `-d`: run the container in the background.
-> - `-i`: run the container in interactive mode.
-> - `-t`: to allocate pseudo-TTY.
-> - `--name`: name of the container
-
-```sh
-docker container run -p 5000:5000 -dit --name DOGEAPI dogeapi:latest
-```
-
-- Check the status of the docker container
-
-```sh
-docker container ps
 ```
 
 ## Preconfigured Packages
