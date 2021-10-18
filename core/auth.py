@@ -19,16 +19,31 @@ def login(
     request: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(configuration.get_db),
 ):
+    """
+    Login user
+
+    Args:
+        request (OAuth2PasswordRequestForm, optional): OAuth2PasswordRequestForm. Defaults to Depends().
+        db (Session, optional): Session. Defaults to Depends(configuration.get_db).
+
+    Raises:
+        HTTPException: 401 Unauthorized
+        HTTPException: 404 Not Found
+
+    Returns:
+        Hash: Hash
+    """
     user: schemas.User = db.query(models.User).filter(
         models.User.email == request.username
     ).first()
     if not user:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=f"Invalid Credentials"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Invalid Credentials"
         )
+
     if not Hash.verify(user.password, request.password):
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=f"Incorrect password"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Incorrect password"
         )
 
     # access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)

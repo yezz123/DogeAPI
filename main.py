@@ -26,4 +26,13 @@ app.include_router(user.router)
 
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
+    """
+    Home page
+
+    Args:
+        request (Request): Request object
+
+    Returns:
+        HTMLResponse: HTML response
+    """
     return templates.TemplateResponse("index.html", {"request": request})
