@@ -23,7 +23,7 @@ def login(
     Login user
 
     Args:
-        request (OAuth2PasswordRequestForm, optional): OAuth2PasswordRequestForm. Defaults to Depends().
+        request (OAuth2PasswordRequestForm, optional): OAuth2PasswordRequestForm.
         db (Session, optional): Session. Defaults to Depends(configuration.get_db).
 
     Raises:
