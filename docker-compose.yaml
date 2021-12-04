@@ -13,3 +13,6 @@ services:
         environment:
             - ENVIRONMENT=dev
             - TESTING=0
+            - DATABASE_URL=sqlite:///test.db
+            - SECRET_KEY=dev
+            - ACCESS_TOKEN_EXPIRE_MINUTES=30

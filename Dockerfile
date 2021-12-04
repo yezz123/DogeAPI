@@ -1,4 +1,3 @@
-FROM ubuntu:latest
 FROM tiangolo/uvicorn-gunicorn-fastapi:python3.8
 
 RUN apt update && apt upgrade -y
