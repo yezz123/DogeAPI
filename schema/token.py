@@ -9,9 +9,9 @@ from jose import JWTError, jwt
 from schema.schemas import TokenData
 
 # openssl rand -hex 32
-SECRET_KEY = "secret" or config("SECRET_KEY")
+SECRET_KEY = config("SECRET_KEY", default="secret")
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60 or config(
+ACCESS_TOKEN_EXPIRE_MINUTES = config(
     "ACCESS_TOKEN_EXPIRE_MINUTES", default=60, cast=int
 )
 
