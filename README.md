@@ -23,7 +23,7 @@ API with high performance built with FastAPI & SQLAlchemy, help to improve conne
 - FastAPI
 - Docker
 
-### Project setup
+### Project Setup
 
 ```sh
 # clone the repo
@@ -33,7 +33,7 @@ $ git clone https://github.com/yezz123/DogeAPI
 $ cd DogeAPI
 ```
 
-### Creating virtual environment
+### Creating Virtual Environment
 
 - Create a virtual environment using virtualenv.
 
@@ -57,7 +57,7 @@ $ pip install -r requirements.txt
 $ uvicorn main:app --reload
 ```
 
-### Environment variables
+### Environment Variables
 
 - `SECRET_KEY`: A secret key for signing Json Web Token.
 - `SQLALCHEMY_DATABASE_URL`: The database url to connect to the database.
