@@ -60,7 +60,7 @@ $ uvicorn main:app --reload
 ### Environment Variables
 
 - `SECRET_KEY`: A secret key for signing Json Web Token.
-- `SQLALCHEMY_DATABASE_URL`: The database url to connect to the database.
+- `DATABASE_URL`: The database url to connect to the database.
 - `ACCESS_TOKEN_EXPIRE_MINUTES`: The access token expire minutes.
 
 > change all the environment variables in the `.env.sample` and don't forget to rename it to `.env`.
