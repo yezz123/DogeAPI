@@ -65,7 +65,7 @@ $ uvicorn main:app --reload
 
 > change all the environment variables in the `.env.sample` and don't forget to rename it to `.env`.
 
-### Configured Enviromment
+### Configured Environment
 
 #### Models
 
