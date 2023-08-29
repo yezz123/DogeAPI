@@ -1,22 +1,26 @@
 terraform {
-  required_version = ">= 0.13.1"
+  required_version = "~> 1.5.6"
+
   backend "s3" {
-    bucket         = "cafi-dev-state-bucket"
-    key            = "cafi-dev/demos/core/vpc/terraform.tfstate"
-    region         = "us-east-1"
-    dynamodb_table = "cafi-dev-terraform-state-lock"
+    bucket   = "cafi-demo1"
+    key      = "demos/core/vpc/terraform.tfstate"
+    region   = "us-east-1"
+    role_arn = "arn:aws:iam::180217099948:role/atlantis-access"
   }
 
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 4.9"
+      version = "~> 4.0"
     }
   }
 }
 
 provider "aws" {
   region = var.aws_region
+  assume_role {
+    role_arn = "arn:aws:iam::180217099948:role/atlantis-access"
+  }
 }
 
 data "aws_availability_zones" "available" {}
@@ -44,8 +48,8 @@ module "vpc" {
   private_subnets  = [for k, v in local.azs : cidrsubnet(var.vpc_cidr, 8, k + 3)]
   database_subnets = [for k, v in local.azs : cidrsubnet(var.vpc_cidr, 8, k + 6)]
 
-  enable_nat_gateway = true
-  single_nat_gateway = true
+  enable_nat_gateway     = true
+  single_nat_gateway     = true
   one_nat_gateway_per_az = false
 
   tags = local.tags
