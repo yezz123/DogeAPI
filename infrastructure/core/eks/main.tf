@@ -18,6 +18,9 @@ terraform {
 
 provider "aws" {
   region = var.aws_region
+  assume_role {
+    role_arn = "arn:aws:iam::180217099948:role/atlantis-access"
+  }
 }
 
 data "terraform_remote_state" "vpc" {
