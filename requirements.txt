@@ -24,3 +24,4 @@ starlette
 typing-extensions
 uvicorn
 pre-commit
+psycopg2
