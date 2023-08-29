@@ -6,7 +6,7 @@ projects:
     enabled: true
     when_modified: ["*.tf", "*.tfvars"]
 - dir: infrastructure/core/eks
-  workflow: default
+  workflow: eks
   autoplan:
     enabled: true
     when_modified: ["*.tf", "*.tfvars"]
