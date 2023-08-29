@@ -1,0 +1,7 @@
+version: 3
+projects:
+- dir: infrastructure/core/vpc
+  workflow: default
+  autoplan:
+    enabled: true
+    when_modified: ["*.tf", "*.tfvars"]
