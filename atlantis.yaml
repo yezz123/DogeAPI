@@ -4,7 +4,3 @@ projects:
   autoplan:
     enabled: true
     when_modified: ["*.tf", "*.tfvars"]
-- dir: infrastructure/core/eks
-  autoplan:
-    enabled: true
-    when_modified: ["*.tf", "*.tfvars"]
