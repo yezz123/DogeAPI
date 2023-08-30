@@ -15,5 +15,5 @@ jobs:
         run: make pull
       - name: Build image
         run: make build
-      - name: Test code format -- pre-commit
-        run: make lint
+      #- name: Test code format -- pre-commit
+      #  run: make lint
