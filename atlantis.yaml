@@ -8,3 +8,7 @@ projects:
   autoplan:
     enabled: true
     when_modified: ["*.tf", "*.tfvars"]
+- dir: infrastructure/app/rds
+  autoplan:
+    enabled: true
+    when_modified: ["*.tf", "*.tfvars"]
