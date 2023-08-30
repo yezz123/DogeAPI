@@ -2,9 +2,7 @@ version: "3.8"
 
 services:
     backend:
-        build:
-            context: .
-            dockerfile: Dockerfile
+        image: ghcr.io/appcd-dev/dogeapi/dogeapi:docker
         ports:
             - 8000:8000
         environment:
