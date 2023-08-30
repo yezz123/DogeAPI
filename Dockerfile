@@ -17,7 +17,7 @@ RUN pip3 install -r /app/requirements.txt
 COPY ./ /app
 
 # Create the directory where the database will be stored and give it the appropriate permissions
-RUN mkdir -p /var/run/dogeapi && chown -R 1000:1000 /var/run/dogeapi && chown -R 1000:1000 /var/run/dogeapi.sqlite
+RUN mkdir -p /var/run/dogeapi && chown -R 1000:1000 /var/run/dogeapi
 
 # Switch to non-root user
 USER 1000
