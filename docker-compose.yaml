@@ -2,7 +2,9 @@ version: "3.8"
 
 services:
     backend:
-        image: ghcr.io/appcd-dev/dogeapi/dogeapi:docker
+        build:
+            context: .
+            dockerfile: Dockerfile
         ports:
             - 8000:8000
         environment:
@@ -13,7 +15,6 @@ services:
             - ACCESS_TOKEN_EXPIRE_MINUTES=30
         depends_on:
             - db
-
     db:
         image: postgres
         restart: always
