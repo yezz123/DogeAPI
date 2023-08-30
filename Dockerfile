@@ -16,6 +16,12 @@ RUN pip3 install -r /app/requirements.txt
 # Copy all the code into /app directory (No volume mount needed)
 COPY ./ /app
 
+# Create the directory where the database will be stored and give it the appropriate permissions
+RUN mkdir -p /var/run/dogeapi && chown -R 1000:1000 /var/run/dogeapi
+
+# Switch to non-root user
+USER 1000
+
 # Define environment variables for logging
 ENV ACCESS_LOG=${ACCESS_LOG:-/proc/1/fd/1}
 ENV ERROR_LOG=${ERROR_LOG:-/proc/1/fd/2}
