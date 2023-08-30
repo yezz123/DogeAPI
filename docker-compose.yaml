@@ -5,12 +5,14 @@ services:
         build:
             context: .
             dockerfile: Dockerfile
+        #image: ghcr.io/appcd-dev/dogeapi/dogeapi:latest
         ports:
             - 8000:8000
         environment:
             - ENVIRONMENT=dev
             - TESTING=0
             - DATABASE_URL=postgresql+psycopg2://postgres:password@db:5432/postgres
+            #- DATABASE_URL=sqlite:////var/run/dogeapi/dogeapi.sqlite
             - SECRET_KEY=dev
             - ACCESS_TOKEN_EXPIRE_MINUTES=30
         depends_on:
