@@ -23,22 +23,7 @@ provider "aws" {
   }
 }
 
-data "terraform_remote_state" "vpc" {
-  backend = "s3"
-
-  config = {
-    bucket = var.state_bucket_name
-    key    = var.state_bucket_vpc_key
-    region = var.state_bucket_region
-  }
-}
-
 locals {
-  vpc_id          = data.terraform_remote_state.vpc.outputs.vpc_id
-  azs             = data.terraform_remote_state.vpc.outputs.azs
-  private_subnets = data.terraform_remote_state.vpc.outputs.private_subnets
-
-
   tags = {
     Terraform   = "True"
     Environment = var.environment
@@ -53,8 +38,8 @@ module "eks" {
   cluster_version                = var.cluster_version
   cluster_endpoint_public_access = true
 
-  vpc_id     = local.vpc_id
-  subnet_ids = local.private_subnets
+  vpc_id     = var.vpc_id
+  subnet_ids = var.private_subnets
 
   # EKS Addons
   cluster_addons = {
@@ -93,12 +78,12 @@ module "eks" {
 
   fargate_profiles = merge(
     { for i in range(3) :
-      "kube-system-${element(split("-", local.azs[i]), 2)}" => {
+      "kube-system-${element(split("-", var.azs[i]), 2)}" => {
         selectors = [
           { namespace = "kube-system" }
         ]
         # We want to create a profile per AZ for high availability
-        subnet_ids = [element(local.private_subnets, i)]
+        subnet_ids = [element(var.private_subnets, i)]
       }
     },
   )
