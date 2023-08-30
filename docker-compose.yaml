@@ -13,6 +13,18 @@ services:
         environment:
             - ENVIRONMENT=dev
             - TESTING=0
-            - DATABASE_URL=sqlite:///test.db
+            - DATABASE_URL=postgresql+psycopg2://postgres:password@db:5432/postgres
             - SECRET_KEY=dev
             - ACCESS_TOKEN_EXPIRE_MINUTES=30
+        depends_on:
+            - db
+
+    db:
+        image: postgres
+        restart: always
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: password
+            POSTGRES_DB: postgres
+        ports:
+            - "5432:5432"
