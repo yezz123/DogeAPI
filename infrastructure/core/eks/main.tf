@@ -123,7 +123,7 @@ provider "helm" {
   }
 }
 
-// Add the IAM role for load balancer
+// Add the IAM role for load balancer *Not used right now*
 module "vpc_cni_irsa_role" {
   source = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
 
@@ -141,3 +141,65 @@ module "vpc_cni_irsa_role" {
   }
 }
 
+#############
+## Manually executed for now after terraform apply
+#############
+
+## Intall the AWS Load Balancer Controller
+# curl -O https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.5.4/docs/install/iam_policy.json
+
+# aws iam create-policy \
+#     --policy-name AWSLoadBalancerControllerIAMPolicy \
+#     --policy-document file://iam_policy.json \
+#     --profile=atlantis-access \
+#     --region=us-east-2
+
+# eksctl create iamserviceaccount \
+#   --cluster=demo-demo \
+#   --namespace=kube-system \
+#   --name=aws-load-balancer-controller \
+#   --role-name AmazonEKSLoadBalancerControllerRole \
+#   --attach-policy-arn=arn:aws:iam::180217099948:policy/AWSLoadBalancerControllerIAMPolicy \
+#   --approve \
+#   --profile=atlantis-access \
+#   --region=us-east-2
+
+# helm repo add eks https://aws.github.io/eks-charts
+
+# helm repo update eks
+
+# helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
+#   -n kube-system \
+#   --set clusterName=demo-demo \
+#   --set serviceAccount.create=false \
+#   --set serviceAccount.name=aws-load-balancer-controller \
+#   --set region=us-east-2 \
+#   --set vpcId=vpc-0c37ffe0affae162f
+
+# kubectl get deployment -n kube-system aws-load-balancer-controller
+
+#############
+## Test app to check ALB is working as expected
+#############
+# eksctl create fargateprofile \
+#     --cluster demo-demo \
+#     --region us-east-2 \
+#     --name alb-sample-app \
+#     --namespace game-2048 \
+#     --profile=atlantis-access \
+#     --region=us-east-2
+
+# kubectl apply -f 2048_full.yaml
+
+# kubectl get ingress/ingress-2048 -n game-2048
+
+## To Debug
+# kubectl logs -f -n kube-system -l app.kubernetes.io/instance=aws-load-balancer-controller
+
+# eksctl create fargateprofile \
+#     --cluster demo-demo \
+#     --region us-east-2 \
+#     --name demo-default \
+#     --namespace default \
+#     --profile=atlantis-access \
+#     --region=us-east-2
