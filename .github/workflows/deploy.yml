@@ -34,4 +34,8 @@ jobs:
         run: kubectl config get-contexts
       - name: Deploy Helm
         shell: bash
-        run: helm upgrade demo-chart ./.appcd/charts/dogeapi --dry-run
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          helm upgrade demo-chart ./.appcd/charts/dogeapi --dry-run
