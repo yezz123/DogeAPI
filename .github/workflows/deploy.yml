@@ -22,8 +22,6 @@ jobs:
         uses: unfor19/install-aws-cli-action@master
         with:
           version: "2"
-      - run: aws --version
-        shell: bash
       - name: Configure AWS CLI
         run: |
           aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -33,5 +31,10 @@ jobs:
         run: aws eks update-kubeconfig --name demo-demo
       - name: Verify Kubernetes Cluster Access
         run: kubectl get nodes
-      - name: Deploy Helm
-        run: helm upgrade demo-chart ./.appcd/charts/dogeapi --dry-run
+      - name: Helm Diff
+        run: |
+          helm plugin install https://github.com/databus23/helm-diff
+          helm diff upgrade demo-chart ./.appcd/charts/dogeapi --dry-run
+      - name: Helm Upgrade
+        run: |
+          helm upgrade demo-chart ./.appcd/charts/dogeapi --dry-run
