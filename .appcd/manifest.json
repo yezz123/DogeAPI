@@ -1,0 +1,32 @@
+{
+    "metadata": {
+        "repository": "some-repo-url",
+        "commit": "some-commit-hash",
+        "branch": "branch-name"
+    },
+    "projects": [
+        {
+            "metadata": {
+                "languages": [
+                    "python"
+                ],
+                "frameworks": [
+                    "fastapi"
+                ]
+            },
+            "services": [
+                {
+                    "name": "dogeapi",
+                    "image_registry": "ghcr.io/appcd-dev/dogeapi/dogeapi",
+                    "image_tag": "latest",
+                    "server_port": 8000,
+                    "ports": [
+                        {
+                            "listen": 8000
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

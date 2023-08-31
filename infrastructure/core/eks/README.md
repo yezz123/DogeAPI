@@ -1,5 +1,10 @@
 # EKS
-Infrastructure templates for managing the EKS cluster
+Infrastructure templates for managing the EKS cluster.
+
+Note: There were some manual steps performed at the moment to make the ALB controller work which are captured as comments on the main.tf and were taken from:
+
+- https://docs.aws.amazon.com/eks/latest/userguide/alb-ingress.html
+- https://docs.aws.amazon.com/eks/latest/userguide/aws-load-balancer-controller.html
 
 ## Requirements
 
