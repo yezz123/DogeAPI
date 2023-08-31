@@ -33,14 +33,5 @@ jobs:
       - name: Check Kubernetes context
         run: kubectl config get-contexts
       - name: Deploy Helm
-        uses: bitovi/github-actions-deploy-eks-helm@v1.2.4
-        with:
-            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-            aws-region: us-east-2
-            cluster-name: demo-demo
-            config-files: .appcd/overrides/values.yaml
-            chart-path: .appcd/chart/dogeapi
-            namespace: default
-            name: demo-chart
-            dry-run: true
+        shell: bash
+        run: helm upgrade demo-chart ./.appcd/charts/dogeapi --dry-run
