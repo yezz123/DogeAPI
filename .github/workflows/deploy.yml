@@ -21,7 +21,7 @@ jobs:
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
       - name: run appCD
         run: |
-          docker run --rm --name iacgen \
+          sudo docker run --rm --name iacgen \
           -v "$(pwd)/.appcd:/appcd" \
           ghcr.io/appcd-dev/iac-gen:main create \
           -m /appcd/manifest.json -d k8s -o /appcd/charts
