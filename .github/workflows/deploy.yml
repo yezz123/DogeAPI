@@ -12,11 +12,22 @@ on:
       - v*
 
 jobs:
-  build:
+  generate:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
+      - name: run appCD
+        run: |
+          docker run --rm --name iacgen \
+          -v "$(pwd)/.appcd:/appcd" \
+          ghcr.io/appcd-dev/iac-gen:main create \
+          -m /appcd/manifest.json -d k8s -o /appcd/charts
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v2
       - name: Install AWS CLI
         id: install-aws-cli
         uses: unfor19/install-aws-cli-action@master
@@ -33,7 +44,7 @@ jobs:
           helm plugin install https://github.com/databus23/helm-diff
       - name: Helm diff
         run: |
-          helm diff upgrade demo-chart ./.appcd/charts/dogeapi --dry-run
+          helm diff upgrade demo-chart ./.appcd/charts/dogeapi -f .appcd/overrides/dogeapi/values.yaml --install
       - name: Helm Upgrade
         run: |
-          helm upgrade demo-chart ./.appcd/charts/dogeapi --dry-run
+          helm upgrade demo-chart ./.appcd/charts/dogeapi -f .appcd/overrides/dogeapi/values.yaml --install --dry-run

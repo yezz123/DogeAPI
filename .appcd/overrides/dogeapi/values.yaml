@@ -1,7 +1,4 @@
-image:
-    repository: ghcr.io/appcd-dev/dogeapi/dogeapi
-    pullPolicy: Always
-    tag: latest
+# Overriding the securityContext as this application at the moment needs to be aboe to write to the filesystem
 securityContext:
     allowPrivilegeEscalation: false
     capabilities:
@@ -12,6 +9,8 @@ securityContext:
     runAsUser: 1000
     seccompProfile:
         type: RuntimeDefault
+
+# Overriding the service to use an ALB ingress
 ingress:
     enabled: true
     className: "alb"
@@ -23,10 +22,14 @@ ingress:
             - path: /
               pathType: Prefix
     tls: []
+
+# Overriding the resources to use Fargate
 tolerations:
 - key: "eks.amazonaws.com/compute-type"
   value: "fargate"
   effect: NoSchedule
+
+# Overriding the environment variables to use sqlite
 env:
 - name: ENVIRONMENT
   value: dev
@@ -38,3 +41,6 @@ env:
   value: "dev"
 - name: ACCESS_TOKEN_EXPIRE_MINUTES
   value: "30"
+
+# Fargate doesn't support AppArmor
+apparmorProfile: null
