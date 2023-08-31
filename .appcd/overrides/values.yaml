@@ -1,0 +1,76 @@
+image:
+    repository: ghcr.io/appcd-dev/dogeapi/dogeapi
+    pullPolicy: Always
+    tag: docker
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+serviceAccount:
+    create: true
+    annotations: {}
+    name: ""
+podAnnotations: {}
+podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    seccompProfile:
+        type: RuntimeDefault
+securityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+        drop:
+            - ALL
+    # readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    runAsUser: 1000
+    seccompProfile:
+        type: RuntimeDefault
+service:
+    type: ClusterIP
+    port: 8000
+    targetPort: 8000
+    protocol: TCP
+    name: http
+ingress:
+    enabled: true
+    className: "alb"
+    annotations:
+        alb.ingress.kubernetes.io/scheme: internet-facing
+        alb.ingress.kubernetes.io/target-type: ip
+    hosts:
+        - paths:
+            - path: /
+              pathType: Prefix
+    tls: []
+resources:
+    limits:
+        cpu: 100m
+        memory: 128Mi
+    requests:
+        cpu: 100m
+        memory: 128Mi
+autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
+nodeSelector: {}
+tolerations:
+- key: "eks.amazonaws.com/compute-type"
+  value: "fargate"
+  effect: NoSchedule
+affinity: {}
+env:
+- name: ENVIRONMENT
+  value: dev
+- name: TESTING
+  value: "0"
+- name: DATABASE_URL
+  value: "sqlite:////var/run/dogeapi/dogeapi.sqlite"
+- name: SECRET_KEY
+  value: "dev"
+- name: ACCESS_TOKEN_EXPIRE_MINUTES
+  value: "30"
+automountServiceAccountToken: false
+#apparmorProfile: runtime/default
