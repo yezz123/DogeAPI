@@ -17,17 +17,21 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v1
-      - name: Test AWS CLI
+      - name: Install AWS CLI
         id: install-aws-cli
         uses: unfor19/install-aws-cli-action@master
         with:
           version: "2"
       - run: aws --version
         shell: bash
-      - name: Deploy Helm
-        shell: bash
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - name: Configure AWS CLI
         run: |
-          aws eks update-kubeconfig --name demo-demo --region us-east-2 && helm upgrade demo-chart ./.appcd/charts/dogeapi --dry-run
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws configure set region us-east-2
+      - name: Update Kubeconfig
+        run: aws eks update-kubeconfig --name demo-demo
+      - name: Verify Kubernetes Cluster Access
+        run: kubectl get nodes
+      - name: Deploy Helm
+        run: helm upgrade demo-chart ./.appcd/charts/dogeapi --dry-run
