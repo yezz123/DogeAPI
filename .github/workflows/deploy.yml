@@ -1,9 +1,13 @@
 name: Deploy
 
 on:
-  push:
+  # Depends on the Docker Publish workflow to be completed
+  workflow_run:
+    workflows: ["Docker Publish"]
     branches:
       - main
+    types:
+      - completed
 
 jobs:
   generate-and-deploy:
