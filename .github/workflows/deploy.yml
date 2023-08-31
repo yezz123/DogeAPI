@@ -24,18 +24,10 @@ jobs:
           version: "2"
       - run: aws --version
         shell: bash
-      - name: Get EKS kubeconfig
-        shell: bash
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        run: aws eks update-kubeconfig --name demo-demo --region us-east-2
-      - name: Check Kubernetes context
-        run: kubectl config get-contexts
       - name: Deploy Helm
         shell: bash
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
-          helm upgrade demo-chart ./.appcd/charts/dogeapi --dry-run
+          aws eks update-kubeconfig --name demo-demo --region us-east-2 && helm upgrade demo-chart ./.appcd/charts/dogeapi --dry-run
