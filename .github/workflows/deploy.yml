@@ -2,14 +2,8 @@ name: Deploy
 
 on:
   push:
-    # Publish `main` as Docker `latest` image.
     branches:
       - main
-      - cd
-
-    # Publish `v1.2.3` tags as releases.
-    tags:
-      - v*
 
 jobs:
   generate-and-deploy:
