@@ -59,4 +59,4 @@ tolerations: []
 affinity: {}
 env: []
 automountServiceAccountToken: false
-apparmorProfile: runtime/default
+#apparmorProfile: runtime/default
