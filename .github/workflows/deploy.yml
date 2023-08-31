@@ -1,0 +1,31 @@
+name: Deploy
+
+on:
+  push:
+    # Publish `main` as Docker `latest` image.
+    branches:
+      - main
+      - cd
+
+    # Publish `v1.2.3` tags as releases.
+    tags:
+      - v*
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v1
+      - name: Deploy Helm
+        uses: bitovi/github-actions-deploy-eks-helm@v1.2.4
+        with:
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws-region: us-east-2
+            cluster-name: demo-demo
+            config-files: .appcd/overrides/values.yaml
+            chart-path: .appcd/chart/dogeapi
+            namespace: default
+            name: demo-chart
+            dry-run: true

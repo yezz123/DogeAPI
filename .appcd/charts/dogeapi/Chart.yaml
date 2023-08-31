@@ -1,0 +1,6 @@
+apiVersion: v2
+name: dogeapi
+description: Automated helm chart created for service "dogeapi" by AppCD
+type: application
+version: 0.1.0
+appVersion: 1.0.0
