@@ -17,6 +17,17 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v1
+      - name: Test AWS CLI
+        id: install-aws-cli
+        uses: unfor19/install-aws-cli-action@master
+        with:
+          version: "2"
+      - run: aws --version
+        shell: bash
+      - run: aws eks update-kubeconfig --name demo-demo --region us-east-2
+        shell: bash
+      - name: Check Kubernetes context
+        run: kubectl config get-contexts
       - name: Deploy Helm
         uses: bitovi/github-actions-deploy-eks-helm@v1.2.4
         with:
