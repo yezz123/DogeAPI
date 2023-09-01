@@ -7,11 +7,11 @@ jobs:
   compare-artifacts:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/appcd-dev/appcd-dist/appcd:main
+      image: ghcr.io/appcd-dev/appcd-dist/appcd:main@sha256:a38ade31e60f3f7f76b1135a388db158eed3c90816d5b5c09e33dd806efb67d5
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
-      options: --user root --pull always
+      options: --user root
     steps:
       - name: Checkout Main Branch
         uses: actions/checkout@v2
