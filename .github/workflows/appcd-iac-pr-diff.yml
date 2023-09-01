@@ -68,7 +68,7 @@ jobs:
           script: |
             const fs = require('fs');
             const diff = fs.readFileSync('diff.txt', 'utf-8');
-            const body = `### AppCD AppStack: http://demo.dev.appcd.io/appstacks/DogeAPI/\n ### IaC Diff\n\`\`\`${diff}\`\`\``;
+            const body = `### AppCD AppStack: http://demo.dev.appcd.io/appstacks/DogeAPI/\n ### IaC Diff:\n\`\`\`${diff}\`\`\``;
             await github.rest.issues.createComment({
                 issue_number: context.issue.number,
                 owner: context.repo.owner,
