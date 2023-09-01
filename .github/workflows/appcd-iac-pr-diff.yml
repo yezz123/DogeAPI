@@ -60,7 +60,8 @@ jobs:
           git config --local user.name "GitHub Action"
           git add deployment_files
           git commit -m "staging deployment files from main to compare them"
-          rm -rf deployment_files/* 
+          rm -rf deploment_files/*
+          rm -rf deployment_files/.appcd 
           cd ..
           mv artifact/${{ steps.extract_branch.outputs.branch }}/.appcd pr_branch/deployment_files/
           cd pr_branch
