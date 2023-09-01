@@ -52,4 +52,4 @@ jobs:
 
       - name: Helm Upgrade
         run: |
-          helm upgrade demo-chart ./.appcd/charts/dogeapi -f .appcd/overrides/dogeapi/values.yaml --install
+          helm upgrade demo-chart ./.appcd/charts/dogeapi -f .appcd/overrides/dogeapi/values.yaml --install --wait
