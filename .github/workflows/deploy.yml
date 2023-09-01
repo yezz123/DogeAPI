@@ -1,13 +1,16 @@
 name: Deploy
 
 on:
-  # Depends on the Docker Publish workflow to be completed
-  workflow_run:
-    workflows: ["Docker Publish"]
+  push:
     branches:
-      - main
-    types:
-      - completed
+      - cd
+  # Depends on the Docker Publish workflow to be completed
+#  workflow_run:
+#    workflows: ["Docker Publish"]
+#    branches:
+#      - main
+#    types:
+#      - completed
 
 jobs:
   generate-and-deploy:
@@ -53,3 +56,7 @@ jobs:
       - name: Helm Upgrade
         run: |
           helm upgrade demo-chart ./.appcd/charts/dogeapi -f .appcd/overrides/dogeapi/values.yaml --install --wait
+
+      - name: Get Ingress
+        run: |
+          kubectl get ingress
