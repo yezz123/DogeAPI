@@ -26,7 +26,6 @@ USER 1000
 ENV ACCESS_LOG=${ACCESS_LOG:-/proc/1/fd/1}
 ENV ERROR_LOG=${ERROR_LOG:-/proc/1/fd/2}
 
-# TODO(sabith read this property)
 EXPOSE 8443
 
 # Define the Uvicorn command to run our application
