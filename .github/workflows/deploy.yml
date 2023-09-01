@@ -25,11 +25,10 @@ jobs:
 
       - name: run appCD
         run: |
-          docker run --rm --name iacgen \
-          -v "$(pwd)/.appcd:/appcd" \
-          ghcr.io/appcd-dev/iac-gen:main create \
-          -m /appcd/manifest.json -d k8s -o /appcd/charts
-
+          docker run --rm \
+          --workdir=/code  \
+          -v $PWD:/code ghcr.io/appcd-dev/appcd-dist/appcd:main \
+          generate --mode ci --output=/code/.appcd/charts
       - name: Install AWS CLI
         id: install-aws-cli
         uses: unfor19/install-aws-cli-action@master
