@@ -28,7 +28,7 @@ jobs:
           --workdir=/code  \
           -v ./main_branch:/code -v ./artifact/main:/artifact/main ghcr.io/appcd-dev/appcd-dist/appcd:main \
           generate --mode ci --output=/artifact/main/.appcd/charts
-          # ls -la
+          ls -la
           # appcd generate --log 1  --mode ci --lang python --scanpath ./main_branch -o artifact/main/
       - name: Checkout PR Branch
         uses: actions/checkout@v2
@@ -47,6 +47,7 @@ jobs:
           --workdir=/code  \
           -v ./pr_branch/:/code -v ./artifact/${{ steps.extract_branch.outputs.branch }}:/artifact ghcr.io/appcd-dev/appcd-dist/appcd:main \
           generate --mode ci --output=/artifact/.appcd/charts
+          ls -al
           # appcd generate --mode ci --lang python --scanpath ./pr_branch -o artifact/${{ steps.extract_branch.outputs.branch }}/
       - name: Generate diff between Main and PR branch
         run: |
