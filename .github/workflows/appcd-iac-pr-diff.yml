@@ -46,15 +46,15 @@ jobs:
           mkdir -p artifact/${{ steps.extract_branch.outputs.branch }}/
           docker run --rm \
           --workdir=/code  \
-          -v ./pr_branch/:/code -v ./artifact/${{ steps.extract_branch.outputs.branch }}:/artifact ghcr.io/appcd-dev/appcd-dist/appcd:main \
-          generate --mode ci --output=/artifact/.appcd/charts
+          -v ./pr_branch/:/code -v ./artifact/${{ steps.extract_branch.outputs.branch }}:/artifact/${{ steps.extract_branch.outputs.branch }} ghcr.io/appcd-dev/appcd-dist/appcd:main \
+          generate --mode ci --output=/artifact/${{ steps.extract_branch.outputs.branch }}/.appcd/charts
           ls -al
           ls -alR ./artifact 
-          # appcd generate --mode ci --lang python --scanpath ./pr_branch -o artifact/${{ steps.extract_branch.outputs.branch }}/
       - name: Generate diff between Main and PR branch
         run: |
           mkdir -p pr_branch/deployment_files
-          mv artifact/main/* pr_branch/deployment_files/
+          ls -alR artifact
+          mv ./artifact/main/.appcd pr_branch/deployment_files/
           cd pr_branch
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
@@ -62,7 +62,7 @@ jobs:
           git commit -m "staging deployment files from main to compare them"
           rm -rf deployment_files/* 
           cd ..
-          mv artifact/${{ steps.extract_branch.outputs.branch }}/* pr_branch/deployment_files/
+          mv artifact/${{ steps.extract_branch.outputs.branch }}/.appcd pr_branch/deployment_files/
           cd pr_branch
           git diff --output=../diff.txt deployment_files/ | cat
           cat ../diff.txt
