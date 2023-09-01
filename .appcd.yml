@@ -1,0 +1,6 @@
+version: 0.0.1
+services:
+  dogeapi:
+    dtr: ghcr.io/appcd-dev/dogeapi/dogeapi
+    tag: latest
+    dockerFile: Dockerfile

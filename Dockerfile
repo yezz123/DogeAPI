@@ -13,3 +13,8 @@ COPY ./ /app
 
 ENV ACCESS_LOG=${ACCESS_LOG:-/proc/1/fd/1}
 ENV ERROR_LOG=${ERROR_LOG:-/proc/1/fd/2}
+
+# TODO(sabith read this property)
+EXPOSE 8000
+
+CMD ["uvicorn", "main:app", "--reload", "--workers", "1", "--host", "0.0.0.0", "--port", "8000"]
