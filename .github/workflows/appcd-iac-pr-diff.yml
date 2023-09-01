@@ -11,7 +11,7 @@ jobs:
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
-      options: --user root
+      options: --user root --entrypoint /bin/bash --pull always
     steps:
       - name: Checkout Main Branch
         uses: actions/checkout@v2
