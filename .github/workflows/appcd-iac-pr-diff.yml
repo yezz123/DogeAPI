@@ -20,6 +20,7 @@ jobs:
           path: main_branch
       - name: Generate IaC from Main Branch
         run: |
+          ls -la
           appcd generate --log 1  --mode ci --lang python --scanpath ./main_branch -o artifact/main/
       - name: Checkout PR Branch
         uses: actions/checkout@v2
