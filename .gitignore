@@ -169,3 +169,8 @@ terraform.rc
 .terraform.lock.hcl
 tfplan
 dev.pem
+
+# Ignore appcd temporary files
+.appcd/charts/
+cpg.bin
+analyzer.log
