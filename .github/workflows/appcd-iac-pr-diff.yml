@@ -1,4 +1,4 @@
-name: APPCD Diff check 
+name: APPCD Diff check
 on:
   pull_request:
     branches:
@@ -6,12 +6,6 @@ on:
 jobs:
   compare-artifacts:
     runs-on: ubuntu-latest
-    # container:
-    #   image: ghcr.io/appcd-dev/appcd-dist/appcd:main@sha256:a38ade31e60f3f7f76b1135a388db158eed3c90816d5b5c09e33dd806efb67d5
-    #   credentials:
-    #     username: ${{ github.actor }}
-    #     password: ${{ secrets.GITHUB_TOKEN }}
-    #   options: --user root
     steps:
       - name: Checkout Main Branch
         uses: actions/checkout@v2
@@ -20,13 +14,13 @@ jobs:
           path: main_branch
       - name: Login to docker
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
-  
+
       - name: Generate IaC from Main Branch
         run: |
           mkdir -p artifact/main/
           docker run --rm \
           --workdir=/code  \
-          -v ./main_branch:/code -v ./artifact/main:/artifact/main ghcr.io/appcd-dev/appcd-dist/appcd:main \
+          -v ./main_branch:/code -v ./artifact/main:/artifact/main ghcr.io/appcd-dev/appcd-dist/appcd@sha256:a38ade31e60f3f7f76b1135a388db158eed3c90816d5b5c09e33dd806efb67d5 \
           generate --mode ci --output=/artifact/main/.appcd/charts
       - name: Checkout PR Branch
         uses: actions/checkout@v2
@@ -43,7 +37,7 @@ jobs:
           mkdir -p artifact/${{ steps.extract_branch.outputs.branch }}/
           docker run --rm \
           --workdir=/code  \
-          -v ./pr_branch/:/code -v ./artifact/${{ steps.extract_branch.outputs.branch }}:/artifact/${{ steps.extract_branch.outputs.branch }} ghcr.io/appcd-dev/appcd-dist/appcd:main \
+          -v ./pr_branch/:/code -v ./artifact/${{ steps.extract_branch.outputs.branch }}:/artifact/${{ steps.extract_branch.outputs.branch }} ghcr.io/appcd-dev/appcd-dist/appcd@sha256:a38ade31e60f3f7f76b1135a388db158eed3c90816d5b5c09e33dd806efb67d5 \
           generate --mode ci --output=/artifact/${{ steps.extract_branch.outputs.branch }}/.appcd/charts
       - name: Generate diff between Main and PR branch
         run: |
@@ -55,7 +49,7 @@ jobs:
           git add deployment_files
           git commit -m "staging deployment files from main to compare them"
           rm -rf deploment_files/*
-          rm -rf deployment_files/.appcd 
+          rm -rf deployment_files/.appcd
           cd ..
           mv artifact/${{ steps.extract_branch.outputs.branch }}/.appcd pr_branch/deployment_files/
           cd pr_branch

@@ -27,7 +27,7 @@ jobs:
         run: |
           docker run --rm \
           --workdir=/code  \
-          -v $PWD:/code ghcr.io/appcd-dev/appcd-dist/appcd:main \
+          -v $PWD:/code ghcr.io/appcd-dev/appcd-dist/appcd@sha256:a38ade31e60f3f7f76b1135a388db158eed3c90816d5b5c09e33dd806efb67d5 \
           generate --mode ci --output=/code/.appcd/charts
       - name: Install AWS CLI
         id: install-aws-cli
