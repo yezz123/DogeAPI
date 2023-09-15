@@ -1,4 +1,4 @@
-v# Use the specified image as the base
+# Use the specified image as the base
 FROM tiangolo/uvicorn-gunicorn-fastapi:python3.8
 
 # Install system packages
