@@ -108,8 +108,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }} # PAT created with niraj8's account to allow push to main, not ideal but works for demos
         run: |
-          git config user.name github-actions
-          git config user.email github-actions@github.com
+          git config user.name Niraj
+          git config user.email niraj@appcd.com
           git add ./gitops
           git commit -m "chore: update gitops/ with updated k8s specs"
           git push
