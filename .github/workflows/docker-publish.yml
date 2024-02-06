@@ -105,6 +105,8 @@ jobs:
               
       # in real apps the gitops config and spec would in be a separate repo
       - name: Commit changes to gitops/
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }} # PAT created with niraj8's account to allow push to main, not ideal but works for demos
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
