@@ -109,3 +109,4 @@ jobs:
         with:
           file_pattern: ./gitops/
           commit_message: "chore: update gitops"
+          branch: main
