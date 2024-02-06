@@ -56,14 +56,10 @@ jobs:
 
       - name: Log into registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
-
-      - name: Push image
+      
+      - name: version output
+        id: version
         run: |
-          IMAGE_ID=docker.pkg.github.com/${{ github.repository }}/$IMAGE_NAME
-
-          # Change all uppercase to lowercase
-          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
-
           # Strip git ref prefix from version
           VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
 
@@ -73,8 +69,34 @@ jobs:
           # Use Docker `latest` tag convention
           [ "$VERSION" == "main" ] && VERSION=latest
 
-          echo IMAGE_ID=$IMAGE_ID
-          echo VERSION=$VERSION
+          echo "image_tag=$VERSION" >> $GITHUB_OUTPUT
 
-          docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
-          docker push $IMAGE_ID:$VERSION
+      - name: Push image
+        run: |
+          IMAGE_ID=docker.pkg.github.com/${{ github.repository }}/$IMAGE_NAME
+
+          # Change all uppercase to lowercase
+          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+          
+          echo IMAGE_ID=$IMAGE_ID
+          echo IMAGE_TAG=${{ steps.version.outputs.image_tag }}
+
+          docker tag $IMAGE_NAME $IMAGE_ID:${{ steps.version.outputs.image_tag }}
+          docker push $IMAGE_ID:${{ steps.version.outputs.image_tag }}
+
+      - name: Inflate helm chart in gitops/
+        run: |
+          if [[ "${{ github.ref }}" == "refs/tags/"* ]]; then
+            helm template demo-chart ./.appcd/charts/dogeapi -f ./.appcd/overrides/dogeapi/values.yaml --set image.tag=${{ steps.version.outputs.image_tag }} > ./gitops/prod/dogeapi.yaml
+          else
+            helm template demo-chart ./.appcd/charts/dogeapi -f ./.appcd/overrides/dogeapi/values.yaml > ./gitops/dev/dogeapi.yaml
+          fi
+              
+      # in real apps the gitops config and spec would in be a separate repo
+      - name: Commit changes to gitops/
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add ./gitops
+          git commit -m "Update dogeapi.yaml"
+          git push
