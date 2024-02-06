@@ -45,7 +45,7 @@ jobs:
     if: github.event_name == 'push'
 
     permissions:
-      contents: read
+      contents: write
       packages: write
 
     steps:
@@ -105,11 +105,7 @@ jobs:
               
       # in real apps the gitops config and spec would in be a separate repo
       - name: Commit changes to gitops/
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT }} # PAT created with niraj8's account to allow push to main, not ideal but works for demos
-        run: |
-          git config user.name Niraj
-          git config user.email niraj@appcd.com
-          git add ./gitops
-          git commit -m "chore: update gitops/ with updated k8s specs"
-          git push
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          file_pattern: ./gitops/
+          commit_message: "chore: update gitops"
