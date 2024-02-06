@@ -55,7 +55,7 @@ jobs:
         run: docker build . --file Dockerfile --tag $IMAGE_NAME
 
       - name: Log into registry
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
       
       - name: version output
         id: version
@@ -73,7 +73,7 @@ jobs:
 
       - name: Push image
         run: |
-          IMAGE_ID=docker.pkg.github.com/${{ github.repository }}/$IMAGE_NAME
+          IMAGE_ID=ghcr.io/${{ github.repository }}/$IMAGE_NAME
 
           # Change all uppercase to lowercase
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
@@ -83,7 +83,11 @@ jobs:
 
           docker tag $IMAGE_NAME $IMAGE_ID:${{ steps.version.outputs.image_tag }}
           docker push $IMAGE_ID:${{ steps.version.outputs.image_tag }}
-      
+
+      ## generating helm charts as this artifact is not checked-in
+      - name: Create required directories
+        run: mkdir -p .appcd/charts && chmod 777 .appcd -R
+    
       - name: run appCD
         run: |
           docker run --rm \
@@ -105,5 +109,5 @@ jobs:
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add ./gitops
-          git commit -m "Update dogeapi.yaml"
+          git commit -m "chore: update gitops/ with updated k8s specs"
           git push
