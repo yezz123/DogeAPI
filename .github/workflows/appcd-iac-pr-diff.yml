@@ -44,6 +44,7 @@ jobs:
           fi
       - name: Copy infrastructure files if empty
         run: |
+          mkdir -p infrastructure
           if [ -z "$(ls -A infrastructure/)" ]; then
             cp -r .appcd/.appcd/infrastructure/app/rds/ infrastructure/
             git config --local user.email "action@github.com"
