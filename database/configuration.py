@@ -6,7 +6,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 SQLALCHEMY_DATABASE_URL = config(
-    "DATABASE_URL", default="sqlite:///./database/dogeapi.sqlite"
+    "DATABASE_URL", default="postgresql+psycopg2://localhost/dogeapi"
 )
 
 if SQLALCHEMY_DATABASE_URL.startswith("postgresql"):
