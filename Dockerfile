@@ -26,7 +26,7 @@ USER 1000
 ENV ACCESS_LOG=${ACCESS_LOG:-/proc/1/fd/1}
 ENV ERROR_LOG=${ERROR_LOG:-/proc/1/fd/2}
 
-EXPOSE 8443
+EXPOSE 8090
 
 # Define the Uvicorn command to run our application
-CMD ["uvicorn", "main:app", "--reload", "--workers", "1", "--host", "0.0.0.0", "--port", "8443"]
+CMD ["uvicorn", "main:app", "--reload", "--workers", "1", "--host", "0.0.0.0", "--port", "8090"]

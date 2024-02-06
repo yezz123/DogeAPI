@@ -15,7 +15,7 @@ jobs:
     timeout-minutes: 10
     steps:
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Create required directories
         run: mkdir -p .appcd/charts && chmod 777 .appcd -R
@@ -29,31 +29,45 @@ jobs:
           --workdir=/code  \
           -v $PWD:/code ghcr.io/appcd-dev/appcd-dist/appcd@sha256:a38ade31e60f3f7f76b1135a388db158eed3c90816d5b5c09e33dd806efb67d5 \
           generate --mode ci --output=/code/.appcd/charts
-      - name: Install AWS CLI
-        id: install-aws-cli
-        uses: unfor19/install-aws-cli-action@master
-        with:
-          version: "2"
-
-      - name: Configure Kubernetes access
+      
+      - name: Inflate helm chart in gitops/dev/
         run: |
-          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws configure set region us-east-2
-          aws eks update-kubeconfig --name demo-demo
-
-      - name: Install Helm Diff
+          helm template demo-chart ./.appcd/charts/dogeapi -f ./.appcd/overrides/dogeapi/values.yaml > ./gitops/dev/dogeapi.yaml
+            
+      - name: Commit changes to gitops/dev
         run: |
-          helm plugin install https://github.com/databus23/helm-diff
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add ./gitops/dev/dogeapi.yaml
+          git commit -m "Update dogeapi.yaml"
+          git push
 
-      - name: Helm diff
-        run: |
-          helm diff upgrade demo-chart ./.appcd/charts/dogeapi -f .appcd/overrides/dogeapi/values.yaml --install
+      # - name: Install AWS CLI
+      #   id: install-aws-cli
+      #   uses: unfor19/install-aws-cli-action@master
+      #   with:
+      #     version: "2"
 
-      - name: Helm Upgrade
-        run: |
-          helm upgrade demo-chart ./.appcd/charts/dogeapi -f .appcd/overrides/dogeapi/values.yaml --install --wait
+      # - name: Configure Kubernetes access
+      #   run: |
+      #     aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     aws configure set region us-east-2
+      #     aws eks update-kubeconfig --name demo-demo
+      
 
-      - name: Get Ingress
-        run: |
-          kubectl get ingress
+      # - name: Install Helm Diff
+      #   run: |
+      #     helm plugin install https://github.com/databus23/helm-diff
+
+      # - name: Helm diff
+      #   run: |
+      #     helm diff upgrade demo-chart ./.appcd/charts/dogeapi -f .appcd/overrides/dogeapi/values.yaml --install
+
+      # - name: Helm Upgrade
+      #   run: |
+      #     helm upgrade demo-chart ./.appcd/charts/dogeapi -f .appcd/overrides/dogeapi/values.yaml --install --wait
+
+      # - name: Get Ingress
+      #   run: |
+      #     kubectl get ingress

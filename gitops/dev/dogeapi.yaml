@@ -1,0 +1,163 @@
+---
+# Source: dogeapi/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: demo-chart-dogeapi
+  labels:
+    helm.sh/chart: dogeapi-0.1.0
+    app.kubernetes.io/name: dogeapi
+    app.kubernetes.io/instance: demo-chart
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm
+---
+# Source: dogeapi/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo-chart-dogeapi
+  labels:
+    helm.sh/chart: dogeapi-0.1.0
+    app.kubernetes.io/name: dogeapi
+    app.kubernetes.io/instance: demo-chart
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8443
+      targetPort: 8443
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: dogeapi
+    app.kubernetes.io/instance: demo-chart
+---
+# Source: dogeapi/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-chart-dogeapi
+  labels:
+    helm.sh/chart: dogeapi-0.1.0
+    app.kubernetes.io/name: dogeapi
+    app.kubernetes.io/instance: demo-chart
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: dogeapi
+      app.kubernetes.io/instance: demo-chart
+  template:
+    metadata:
+      annotations:
+      labels:
+        app.kubernetes.io/name: dogeapi
+        app.kubernetes.io/instance: demo-chart
+    spec:
+      automountServiceAccountToken: false
+      serviceAccountName: demo-chart-dogeapi
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: dogeapi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            readOnlyRootFilesystem: false
+            runAsNonRoot: true
+            runAsUser: 1000
+            seccompProfile:
+              type: RuntimeDefault
+          image: "ghcr.io/appcd-dev/dogeapi/dogeapi:latest"
+          imagePullPolicy: Always
+          env:
+            - name: ENVIRONMENT
+              value: dev
+            - name: TESTING
+              value: "0"
+            - name: DATABASE_URL
+              value: sqlite:////var/run/dogeapi/dogeapi.sqlite
+            - name: SECRET_KEY
+              value: dev
+            - name: ACCESS_TOKEN_EXPIRE_MINUTES
+              value: "30"
+          ports:
+            - name: http
+              containerPort: 8443
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8443
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8443
+          resources:
+            limits:
+              cpu: 100m
+              memory: 128Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+      tolerations:
+        - effect: NoSchedule
+          key: eks.amazonaws.com/compute-type
+          value: fargate
+---
+# Source: dogeapi/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: demo-chart-dogeapi
+  labels:
+    helm.sh/chart: dogeapi-0.1.0
+    app.kubernetes.io/name: dogeapi
+    app.kubernetes.io/instance: demo-chart
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+spec:
+  ingressClassName: alb
+  rules:
+    - host: 
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: demo-chart-dogeapi
+                port:
+                  number: 8443
+---
+# Source: dogeapi/templates/tests/test-connection.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "demo-chart-dogeapi-test-connection"
+  labels:
+    helm.sh/chart: dogeapi-0.1.0
+    app.kubernetes.io/name: dogeapi
+    app.kubernetes.io/instance: demo-chart
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['demo-chart-dogeapi:8443']
+  restartPolicy: Never
