@@ -25,8 +25,8 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-    - port: 8443
-      targetPort: 8443
+    - port: 8090
+      targetPort: 8090
       protocol: TCP
       name: http
   selector:
@@ -91,16 +91,16 @@ spec:
               value: "30"
           ports:
             - name: http
-              containerPort: 8443
+              containerPort: 8090
               protocol: TCP
           livenessProbe:
             httpGet:
               path: /
-              port: 8443
+              port: 8090
           readinessProbe:
             httpGet:
               path: /
-              port: 8443
+              port: 8090
           resources:
             limits:
               cpu: 100m
@@ -139,7 +139,7 @@ spec:
               service:
                 name: demo-chart-dogeapi
                 port:
-                  number: 8443
+                  number: 8090
 ---
 # Source: dogeapi/templates/tests/test-connection.yaml
 apiVersion: v1
@@ -159,5 +159,5 @@ spec:
     - name: wget
       image: busybox
       command: ['wget']
-      args: ['demo-chart-dogeapi:8443']
+      args: ['demo-chart-dogeapi:8090']
   restartPolicy: Never
