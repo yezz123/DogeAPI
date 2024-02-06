@@ -43,7 +43,7 @@ jobs:
         run: |
           mkdir -p infrastructure
           if [ -z "$(ls -A infrastructure/)" ]; then
-            cp -r .appcd/.appcd/infrastructure/app/rds/ infrastructure/
+            cp -r .appcd/infrastructure/app/rds/ infrastructure/
             git config --local user.email "action@github.com"
             git config --local user.name "GitHub Action"
             git add infrastructure/
