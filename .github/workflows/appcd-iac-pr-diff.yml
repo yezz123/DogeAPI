@@ -39,9 +39,6 @@ jobs:
           --workdir=/code  \
           -v ./pr_branch/:/code -v ./artifact/${{ steps.extract_branch.outputs.branch }}:/artifact/${{ steps.extract_branch.outputs.branch }} ghcr.io/appcd-dev/appcd-dist/appcd@sha256:a38ade31e60f3f7f76b1135a388db158eed3c90816d5b5c09e33dd806efb67d5 \
           generate --mode ci --output=/artifact/${{ steps.extract_branch.outputs.branch }}/.appcd/charts
-          if [ -z "$(ls -A infrastructure/)" ]; then
-            cp -r .appcd/.appcd/infrastructure/app/rds/ infrastructure/
-          fi
       - name: Copy infrastructure files if empty
         run: |
           mkdir -p infrastructure
