@@ -41,9 +41,8 @@ jobs:
           generate --mode ci --output=/artifact/${{ steps.extract_branch.outputs.branch }}/.appcd/charts
       - name: Copy infrastructure files if empty
         run: |
+          cd pr_branch
           mkdir -p infrastructure
-          pwd
-          ls
           if [ -z "$(ls -A infrastructure/)" ]; then
             cp -r .appcd/infrastructure/app/rds/ infrastructure/
             git config --local user.email "action@github.com"
@@ -52,6 +51,7 @@ jobs:
             git commit -m "Adds IaC dependency files"
             git push
           fi
+          cd ../
       - name: Generate diff between Main and PR branch
         run: |
           mkdir -p pr_branch/deployment_files
