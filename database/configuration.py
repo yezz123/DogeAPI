@@ -9,7 +9,7 @@ from sqlalchemy.orm import sessionmaker
 # To use a different database, set the DATABASE_URL environment variable
 # Example: DATABASE_URL=postgresql+psycopg2://localhost@dogeapi
 SQLALCHEMY_DATABASE_URL = config(
-    "DATABASE_URL", default="sqlite:///./database/dogeapi.sqlite"
+    "DATABASE_URL", default="postgresql+psycopg2://localhost@dogeapi"
 )
 
 if SQLALCHEMY_DATABASE_URL.startswith("postgresql"):
