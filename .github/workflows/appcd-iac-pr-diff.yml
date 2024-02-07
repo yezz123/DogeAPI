@@ -75,7 +75,20 @@ jobs:
           script: |
             const fs = require('fs');
             const diff = fs.readFileSync('diff.txt', 'utf-8');
-            const body = `### AppCD Diff:\n\`\`\`${diff}\`\`\`\n\natlantis plan -d infrastructure/rds`;
+            const body = `### AppCD Diff:\n\`\`\`${diff}\`\`\``;
+            await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: body
+            })
+      - name: Trigger atlantis plan
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const fs = require('fs');
+            const body = `atlantis plan -d infrastructure/rds`;
             await github.rest.issues.createComment({
                 issue_number: context.issue.number,
                 owner: context.repo.owner,
