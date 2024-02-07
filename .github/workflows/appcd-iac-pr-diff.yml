@@ -88,7 +88,7 @@ jobs:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
             const fs = require('fs');
-            const body = `atlantis plan -d infrastructure/rds`;
+            const body = `atlantis plan`;
             await github.rest.issues.createComment({
                 issue_number: context.issue.number,
                 owner: context.repo.owner,
