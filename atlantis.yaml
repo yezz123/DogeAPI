@@ -1,10 +1,6 @@
 version: 3
 projects:
-- dir: infrastructure/core/vpc
-  autoplan:
-    enabled: true
-    when_modified: ["*.tf", "*.tfvars"]
-- dir: infrastructure/core/eks
+- dir: infrastructure/rds
   autoplan:
     enabled: true
     when_modified: ["*.tf", "*.tfvars"]
