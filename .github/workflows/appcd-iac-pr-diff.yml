@@ -5,40 +5,74 @@ on:
       - main
 jobs:
   compare-artifacts:
+    permissions:
+      contents: write
+      pull-requests: write
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Main Branch
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           ref: main
           path: main_branch
-      - name: Login to docker
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
-
+          fetch-depth: 1
       - name: Generate IaC from Main Branch
+        env:
+          APPCD_TOKEN: ${{ secrets.APPCD_TOKEN }}
+          APPCD_URL: ${{ secrets.APPCD_URL }}
         run: |
-          mkdir -p artifact/main/
+          mkdir -p artifact/main/ ./artifact/tmp
           docker run --rm \
-          --workdir=/code  \
-          -v ./main_branch:/code -v ./artifact/main:/artifact/main ghcr.io/appcd-dev/appcd-dist/appcd@sha256:a38ade31e60f3f7f76b1135a388db158eed3c90816d5b5c09e33dd806efb67d5 \
-          generate --mode ci --output=/artifact/main/.appcd/charts
+            --workdir=/app/scan  \
+            -e APPCD_TOKEN=$APPCD_TOKEN \
+            -e APPCD_URL=$APPCD_URL \
+            -v ./main_branch:/app/scan \
+            -v ./artifact/tmp:/tmp \
+            -v ./artifact/main:/artifact/main \
+            --entrypoint=appcd \
+          ghcr.io/appcd-dev/appcd-dist/appcd-cli:v0.9.1 \
+          generate --mode ci --lang Python --log 2 --output=/artifact/main/.appcd/charts --iac-type Helm
+          cd artifact/main/.appcd/charts
+          unzip scan.zip && rm scan.zip && ls -latr && pwd
+      - name: Upload logs
+        uses: actions/upload-artifact@v2
+        with:
+          name: analyzer_logs_1
+          path: artifact
       - name: Checkout PR Branch
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref }}
           path: pr_branch
+          fetch-depth: 1
       - name: Extract branch name
         id: extract_branch
         run: echo "branch=$(basename ${{ github.head_ref}})" >> $GITHUB_OUTPUT
       - name: echo branch name
         run: echo ${{ steps.extract_branch.outputs.branch }}
       - name: Generate IaC from PR branch
+        env:
+          APPCD_TOKEN: ${{ secrets.APPCD_TOKEN }}
+          APPCD_URL: ${{ secrets.APPCD_URL }}
         run: |
-          mkdir -p artifact/${{ steps.extract_branch.outputs.branch }}/
+          mkdir -p artifact/${{ steps.extract_branch.outputs.branch }}/ ./artifact/tmp
           docker run --rm \
-          --workdir=/code  \
-          -v ./pr_branch/:/code -v ./artifact/${{ steps.extract_branch.outputs.branch }}:/artifact/${{ steps.extract_branch.outputs.branch }} ghcr.io/appcd-dev/appcd-dist/appcd@sha256:a38ade31e60f3f7f76b1135a388db158eed3c90816d5b5c09e33dd806efb67d5 \
-          generate --mode ci --output=/artifact/${{ steps.extract_branch.outputs.branch }}/.appcd/charts
+            --workdir=/app/scan  \
+            -v ./pr_branch/:/app/scan \
+            -v ./artifact/${{ steps.extract_branch.outputs.branch }}:/artifact/${{ steps.extract_branch.outputs.branch }} \
+            -v ./artifact/tmp:/tmp \
+            -e APPCD_TOKEN=$APPCD_TOKEN \
+            -e APPCD_URL=$APPCD_URL \
+            --entrypoint=appcd \
+            ghcr.io/appcd-dev/appcd-dist/appcd-cli:v0.9.1 \
+            generate --mode ci --lang Python --log 2 --iac-type Helm --output=/artifact/${{ steps.extract_branch.outputs.branch }}/.appcd/charts
+          cd artifact/${{ steps.extract_branch.outputs.branch }}/.appcd/charts
+          unzip scan.zip && rm scan.zip && ls -latr
+      - name: Upload logs
+        uses: actions/upload-artifact@v2
+        with:
+          name: analyzer_logs_2
+          path: artifact
       - name: Copy infrastructure files if empty
         run: |
           cd pr_branch
@@ -51,22 +85,22 @@ jobs:
             git commit -m "Adds IaC dependency files"
             git push
           fi
-          cd ../
       - name: Generate diff between Main and PR branch
         run: |
           mkdir -p pr_branch/deployment_files
-          mv ./artifact/main/.appcd pr_branch/deployment_files/
+          mv ./artifact/main/.appcd/charts/helm/scan_*/* pr_branch/deployment_files/
           cd pr_branch
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add deployment_files
           git commit -m "staging deployment files from main to compare them"
-          rm -rf deploment_files/*
-          rm -rf deployment_files/.appcd
+          rm -rf deploment_files
           cd ..
-          mv artifact/${{ steps.extract_branch.outputs.branch }}/.appcd pr_branch/deployment_files/
+          mkdir -p pr_branch/deployment_files/
+          cp -R artifact/${{ steps.extract_branch.outputs.branch }}/.appcd/charts/helm/scan_*/* pr_branch/deployment_files/
           cd pr_branch
-          git diff --output=../diff.txt deployment_files/ | cat
+          git add .
+          git diff --staged --output=../diff.txt deployment_files/ | cat
           cat ../diff.txt
       - name: Comment PR with IaC Changes
         uses: actions/github-script@v6

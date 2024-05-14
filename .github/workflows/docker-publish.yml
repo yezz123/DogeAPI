@@ -24,7 +24,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
 
       - name: Run tests
         run: |
@@ -50,6 +52,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
 
       - name: Build image
         run: docker build . --file Dockerfile --tag $IMAGE_NAME
@@ -91,9 +95,11 @@ jobs:
       - name: run appCD
         run: |
           docker run --rm \
-          --workdir=/code  \
-          -v $PWD:/code ghcr.io/appcd-dev/appcd-dist/appcd@sha256:a38ade31e60f3f7f76b1135a388db158eed3c90816d5b5c09e33dd806efb67d5 \
-          generate --mode ci --output=/code/.appcd/charts
+            --workdir=/code  \
+            -v $PWD:/code ghcr.io/appcd-dev/appcd-dist/appcd-cli:v0.9.0 \
+            generate --mode ci --lang Python --iac-type Helm --output=/code/.appcd/charts
+          cd .appcd/charts && ls
+          unzip DogeAPI.zip && rm DogeAPI.zip
 
       - name: Inflate helm chart in gitops/
         run: |
