@@ -1,0 +1,90 @@
+name: Backend
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "backend/**"
+      - ".github/workflows/backend.yml"
+  pull_request:
+    paths:
+      - "backend/**"
+      - ".github/workflows/backend.yml"
+
+defaults:
+  run:
+    working-directory: backend
+
+concurrency:
+  group: backend-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Lint + format check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
+      - run: uv python install 3.12
+      - run: uv sync --all-extras
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+
+  # typecheck:
+  #   name: Mypy
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: astral-sh/setup-uv@v4
+  #       with:
+  #         enable-cache: true
+  #     - run: uv python install 3.12
+  #     - run: uv sync --all-extras
+  #     - run: uv run mypy src
+
+  test:
+    name: Pytest
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: dogeapi
+          POSTGRES_PASSWORD: dogeapi
+          POSTGRES_DB: dogeapi_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U dogeapi"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+      redis:
+        image: redis:7-alpine
+        ports: ["6379:6379"]
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      JWT_SECRET_KEY: ci-test-secret-key
+      DATABASE_URL: postgresql+asyncpg://dogeapi:dogeapi@localhost:5432/dogeapi_test
+      DATABASE_URL_SYNC: postgresql://dogeapi:dogeapi@localhost:5432/dogeapi_test
+      REDIS_URL: redis://localhost:6379/15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
+      - run: uv python install 3.12
+      - run: uv sync --all-extras
+      - run: uv run pytest --cov=src/dogeapi --cov-report=xml
+      - uses: codecov/codecov-action@v5
+        if: ${{ !cancelled() }}
+        with:
+          files: backend/coverage.xml
+          flags: backend
+        continue-on-error: true
