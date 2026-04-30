@@ -49,11 +49,13 @@ async def create_thread(
     org_id: UUID,
     user: User,
     title: str | None = None,
+    default_model: str | None = None,
 ) -> AIThread:
     thread = AIThread(
         org_id=org_id,
         user_id=user.id,
         title=title or "New conversation",
+        default_model=default_model,
     )
     session.add(thread)
     await session.flush()
@@ -86,6 +88,8 @@ async def append_assistant_message(
         tokens_in=response.tokens_in,
         tokens_out=response.tokens_out,
         model=response.model,
+        cost_usd=response.cost_usd,
+        extra=response.extra or {},
     )
     session.add(msg)
     await session.flush()
