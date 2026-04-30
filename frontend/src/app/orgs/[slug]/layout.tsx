@@ -61,6 +61,7 @@ function OrgChrome({ children }: { children: React.ReactNode }) {
     { href: `/orgs/${slug}/audit-log`, label: "Audit log" },
     { href: `/orgs/${slug}/billing`, label: "Billing" },
     { href: `/orgs/${slug}/ai`, label: "AI chat" },
+    { href: `/orgs/${slug}/ai/agents`, label: "AI agents" },
     { href: `/orgs/${slug}/settings`, label: "Settings" },
   ];
 
