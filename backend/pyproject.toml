@@ -37,7 +37,6 @@ oauth = [
 ]
 ai = [
     "pydantic-ai>=0.0.13",
-    "fastapi-llm-gateway>=0.1.2",
     "tiktoken>=0.8.0",
 ]
 stripe = [
@@ -62,6 +61,7 @@ dev = [
     "types-redis>=4.6.0",
     "factory-boy>=3.3.0",
     "freezegun>=1.5.0",
+    "respx>=0.23.1",
 ]
 
 [build-system]
