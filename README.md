@@ -1,114 +1,118 @@
-![DOGEAPI](docs/Images/header.svg)
-
-<p align="center">
-   <img src="https://img.shields.io/badge/Dev-Yezz123-green?style"/>
-   <img src="https://img.shields.io/badge/language-python-blue?style"/>
-   <img src="https://img.shields.io/github/stars/yezz123/DogeAPI"/>
-   <img src="https://img.shields.io/github/forks/yezz123/DogeAPI"/>
-   <img src="https://visitor-badge.laobi.icu/badge?page_id=yezz123.Pretty-Readme">
-   <img src="https://img.shields.io/static/v1?label=%F0%9F%8C%9F&message=If%20Useful&style=style=flat&color=BC4E99" alt="Star Badge"/>
-   <a href="https://github.com/yezz123/DogeAPI/actions/workflows/docker-publish.yml"><img src="https://github.com/yezz123/DogeAPI/actions/workflows/docker-publish.yml/badge.svg?branch=main"/></a>
-
-</p>
-
 # DogeAPI
 
-API with high performance built with FastAPI & SQLAlchemy, help to improve connection with your Backend Side to create a simple blog and Cruds with OAuth2PasswordBearer ⛏
+> Multi-tenant SaaS boilerplate built on FastAPI + [authx](https://github.com/yezz123/authx) + Next.js. Every feature toggleable via env vars; ship a production-ready SaaS in a weekend.
 
-## Getting Started
+[![Backend](https://github.com/yezz123/DogeAPI/actions/workflows/backend.yml/badge.svg)](https://github.com/yezz123/DogeAPI/actions/workflows/backend.yml)
+[![Frontend](https://github.com/yezz123/DogeAPI/actions/workflows/frontend.yml/badge.svg)](https://github.com/yezz123/DogeAPI/actions/workflows/frontend.yml)
+[![Admin](https://github.com/yezz123/DogeAPI/actions/workflows/admin.yml/badge.svg)](https://github.com/yezz123/DogeAPI/actions/workflows/admin.yml)
 
-### Prerequisites
+## What you get
 
-- Python 3.8.6 or higher
-- FastAPI
-- Docker
+- **Organizations / Workspaces** with per-org data isolation (every tenant row carries `org_id`).
+- **Roles**: Owner / Admin / Member, mapped to authx **scopes** with wildcard support (`org:members:*`).
+- **JWT scoped to org** &mdash; switch orgs and the access token is re-issued with the new `org_id` and computed scopes.
+- **API keys per organization** with scoped permissions, validated via `X-API-Key`.
+- **Email invitations** &mdash; or token-link only when email delivery is disabled.
+- Optional, all gated by `FEATURE_*` env vars: OAuth (Google/GitHub), magic-link, real email delivery (Resend/SMTP), Stripe billing, Pydantic AI chat via [fastapi-llm-gateway](https://pypi.org/project/fastapi-llm-gateway/), Logfire observability, audit log, rate limiting.
 
-### Project Setup
-
-```sh
-# clone the repo
-$ git clone https://github.com/yezz123/DogeAPI
-
-# move to the project folder
-$ cd DogeAPI
-```
-
-### Creating Virtual Environment
-
-- Create a virtual environment using virtualenv.
-
-```shell
-# creating virtual environment
-$ virtualenv venv
-
-# activate virtual environment
-$ source venv/bin/activate
-
-# install all dependencies
-$ pip install -r requirements.txt
-```
-
-### Running the Application
-
-- To run the [Main](main.py) we need to use [uvicorn](https://www.uvicorn.org/) a lightning-fast ASGI server implementation, using uvloop and httptools.
-
-```sh
-# Running the application using uvicorn
-$ uvicorn main:app --reload
-```
-
-### Environment Variables
-
-- `SECRET_KEY`: A secret key for signing Json Web Token.
-- `DATABASE_URL`: The database url to connect to the database.
-- `ACCESS_TOKEN_EXPIRE_MINUTES`: The access token expire minutes.
-
-> change all the environment variables in the `.env.sample` and don't forget to rename it to `.env`.
-
-### Configured Environment
-
-#### Models
-
-- Here for the [Models.py](models/models.py), i create 2 tables based on the requirements for this project `blogs` and `users`
-
-## Running the Docker Container
-
-- We have the Dockerfile created in above section. Now, we will use the Dockerfile to create the image of the FastAPI app and then start the FastAPI app container.
-- Using a preconfigured `Makefile` tor run the Docker Compose:
-
-```sh
-# Pull the latest image
-$ make pull
-
-# Build the image
-$ make build
-
-# Run the container
-$ make start
+## Repository layout
 
 ```
+DogeAPI/
+├── backend/         FastAPI + authx + SQLAlchemy + Alembic (uv-managed)
+├── frontend/        Next.js 15 tenant-facing app (Tailwind v4, Framer Motion, Zod)
+├── admin/           Next.js 15 super-admin portal
+├── infra/           docker-compose + postgres init
+├── .env.sample      every FEATURE_* and secret in one place
+└── Makefile         `make dev`, `make test`, `make migrate`, ...
+```
 
-## Preconfigured Packages
+## Stack
 
-Includes preconfigured packages to kick start DogeAPI by just setting appropriate configuration.
+| Layer        | Tech                                                                                                                        |
+| ------------ | --------------------------------------------------------------------------------------------------------------------------- |
+| Backend      | FastAPI, Pydantic v2, [authx](https://pypi.org/project/authx/) 1.6.0, SQLAlchemy 2 async, Alembic, Postgres 17, Redis 7, uv |
+| Frontend     | Next.js 16, React 19, Tailwind v4, Framer Motion, Zod, bun                                                                  |
+| Admin Portal | Next.js 16, React 19, Tailwind v4, Framer Motion, Zod, bun                                                                  |
+| Optional     | Pydantic AI + fastapi-llm-gateway, Pydantic Logfire, Resend, Stripe, Authlib                                                |
 
-| Package                                                      | Usage                                                            |
-| ------------------------------------------------------------ | ---------------------------------------------------------------- |
-| [uvicorn](https://www.uvicorn.org/)        | a lightning-fast ASGI server implementation, using uvloop and httptools.           |
-| [Python-Jose](https://github.com/mpdavis/python-jose) | a JavaScript Object Signing and Encryption implementation in Python.    |
-| [SQLAlchemy](https://www.sqlalchemy.org/)  | is the Python SQL toolkit and Object Relational Mapper that gives application developers the full power and flexibility of SQL. |
-| [starlette](https://www.starlette.io/)   | a lightweight ASGI framework/toolkit, which is ideal for building high performance asyncio services.    |
-| [passlib](https://passlib.readthedocs.io/en/stable/)  | a password hashing library for Python 2 & 3, which provides cross-platform implementations of over 30 password hashing algorithms         |
-| [bcrypt](https://github.com/pyca/bcrypt/)               | Good password hashing for your software and your servers.    |
-| [python-multipart](https://github.com/andrew-d/python-multipart) | streaming multipart parser for Python.   |
+## Quick start
 
-`yapf` packages for `linting and formatting`
+Prereqs: **uv** &ge; 0.5, **bun** &ge; 1.3, **Docker**.
 
-## Contributing
+```bash
+git clone https://github.com/yezz123/DogeAPI && cd DogeAPI
+cp .env.sample .env
 
-- Join the DOGEAPI Creator and Contribute to the Project if you have any enhancement or add-ons to create a good and Secure Project, Help any User to Use it in a good and simple way.
-- Check all information here at [docs's Folder](docs) to understand to how to contribute or to Read the Code of Conduct.
+make bootstrap          # uv sync + bun install for all 3 apps
+make up                 # postgres + redis + mailpit via docker compose
+make migrate            # alembic upgrade head
+
+# In three separate terminals:
+make dev-backend        # http://localhost:8000  (FastAPI + /docs)
+make dev-frontend       # http://localhost:3000  (tenant app)
+make dev-admin          # http://localhost:3001  (super-admin)
+```
+
+## Feature flags
+
+Every optional module is gated by an env var. Disabled features incur **zero**
+runtime cost &mdash; their routers are never registered, their dependencies never
+imported.
+
+| Flag                     | Default | Module                            |
+| ------------------------ | ------- | --------------------------------- |
+| `FEATURE_API_KEYS`       | `true`  | API keys per org (`X-API-Key`)    |
+| `FEATURE_AUDIT_LOG`      | `true`  | Audit log of mutations            |
+| `FEATURE_RATE_LIMITING`  | `true`  | authx `RateLimiter` + Redis       |
+| `FEATURE_OAUTH`          | `false` | Google + GitHub via Authlib       |
+| `FEATURE_MAGIC_LINK`     | `false` | Passwordless                      |
+| `FEATURE_EMAIL_DELIVERY` | `false` | Resend / SMTP                     |
+| `FEATURE_AI_CHAT`        | `false` | Pydantic AI + fastapi-llm-gateway |
+| `FEATURE_LOGFIRE`        | `false` | Pydantic Logfire tracing          |
+| `FEATURE_STRIPE`         | `false` | Per-org subscriptions             |
+
+Optional Python deps live behind `pyproject.toml` extras:
+
+```bash
+uv sync --extra ai --extra stripe       # only what you need
+uv sync --extra all                     # everything
+```
+
+## Multi-tenancy model
+
+- Shared database, shared schema. Every tenant row has `org_id UUID NOT NULL` with composite indexes.
+- The active org lives in the JWT (`data.org_id` + `data.role` + `scopes`).
+- `current_org` FastAPI dep extracts the org from the token and every repository function takes it as a required argument.
+- `POST /orgs/{slug}/switch` re-issues the token pair with new claims.
+
+## Roles &rarr; scopes
+
+```python
+ROLE_SCOPES = {
+    Role.OWNER:  ["org:*"],
+    Role.ADMIN:  ["org:members:*", "org:apikeys:*", "org:audit:read", "org:billing:read", "org:ai:*"],
+    Role.MEMBER: ["org:read", "org:ai:use"],
+}
+```
+
+Routes use `auth.scopes_required(...)` &mdash; wildcards (`"org:*"`) match
+everything underneath.
+
+## Development
+
+See per-app READMEs:
+
+- [backend/README.md](backend/README.md)
+- [frontend/README.md](frontend/README.md)
+- [admin/README.md](admin/README.md)
+
+```bash
+make test               # all suites
+make lint               # ruff + next lint
+make typecheck-backend  # mypy
+```
 
 ## License
 
-This project is licensed under the terms of the MIT license.
+MIT &mdash; see [LICENSE](LICENSE).
