@@ -1,41 +1,35 @@
 default_language_version:
-    python: python3.8
+  python: python3.12
+
 repos:
-    - repo: https://github.com/pre-commit/pre-commit-hooks
-      rev: v4.6.0
-      hooks:
-          - id: check-merge-conflict
-          - id: check-added-large-files
-          - id: check-ast
-          - id: check-symlinks
-          - id: check-yaml
-          - id: trailing-whitespace
-          - id: check-json
-          - id: debug-statements
-          - id: pretty-format-json
-            args: ["--autofix", "--allow-missing-credentials"]
-    - repo: https://github.com/PyCQA/isort
-      rev: 5.13.2
-      hooks:
-          - id: isort
-            args: ["--profile", "black"]
-    - repo: https://github.com/PyCQA/flake8
-      rev: "7.0.0"
-      hooks:
-          - id: flake8
-            additional_dependencies: [flake8-print]
-            files: '\.py$'
-            args:
-                - --select=F401,F403,F406,F821,T001,T003
-    - repo: https://github.com/humitos/mirrors-autoflake
-      rev: v1.1
-      hooks:
-          - id: autoflake
-            files: '\.py$'
-            exclude: '^\..*'
-            args: ["--in-place", "--remove-all-unused-imports"]
-    - repo: https://github.com/psf/black
-      rev: 24.4.2
-      hooks:
-          - id: black
-            args: ["--target-version", "py38"]
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        exclude: backend/uv.lock
+      - id: check-ast
+      - id: check-symlinks
+      - id: check-yaml
+      - id: check-toml
+      - id: check-json
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: debug-statements
+      - id: detect-private-key
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.7.4
+    hooks:
+      - id: ruff
+        args: [--fix]
+        files: ^backend/
+      - id: ruff-format
+        files: ^backend/
+
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v4.0.0-alpha.8
+    hooks:
+      - id: prettier
+        files: \.(js|jsx|ts|tsx|json|css|md|yml|yaml)$
+        exclude: ^(backend/|infra/postgres/)
