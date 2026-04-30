@@ -84,11 +84,9 @@ class Settings(BaseSettings):
     STRIPE_PRICE_PRO: str = "price_pro"
     STRIPE_PRICE_ENTERPRISE: str = "price_enterprise"
 
-    LLM_GATEWAY_URL: str = "http://localhost:4000"
+    LLM_GATEWAY_URL: str = "https://api.llmgateway.io/v1"
     LLM_GATEWAY_API_KEY: str = ""
-    OPENAI_API_KEY: str = ""
-    ANTHROPIC_API_KEY: str = ""
-    AI_DEFAULT_MODEL: str = "gpt-4o-mini"
+    AI_DEFAULT_MODEL: str = "gpt-5-mini"
     AI_MONTHLY_TOKEN_QUOTA: int = 1_000_000
 
     LOGFIRE_TOKEN: str = ""

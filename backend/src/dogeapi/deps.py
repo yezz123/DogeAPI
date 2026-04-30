@@ -113,7 +113,19 @@ async def get_active_role(
         raise HTTPException(status.HTTP_403_FORBIDDEN, "Invalid role claim") from exc
 
 
-SettingsDep = Annotated[Settings, Depends(get_settings)]
+def get_app_settings(request: Request) -> Settings:
+    """Return the per-app ``Settings`` (set in :func:`dogeapi.main.create_app`).
+
+    Falling back to :func:`get_settings` keeps the dep usable from contexts
+    that don't have a request-bound app (e.g. ad-hoc scripts).
+    """
+    state_settings = getattr(request.app.state, "settings", None)
+    if isinstance(state_settings, Settings):
+        return state_settings
+    return get_settings()
+
+
+SettingsDep = Annotated[Settings, Depends(get_app_settings)]
 SessionDep = Annotated[AsyncSession, Depends(get_session)]
 RedisDep = Annotated[Redis, Depends(get_redis)]
 AuthDep = Annotated[AuthX, Depends(get_authx_from_request)]
