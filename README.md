@@ -3,8 +3,8 @@
 > Multi-tenant SaaS boilerplate built on FastAPI + [authx](https://github.com/yezz123/authx) + Next.js. Every feature toggleable via env vars; ship a production-ready SaaS in a weekend.
 
 [![Backend](https://github.com/yezz123/DogeAPI/actions/workflows/backend.yaml/badge.svg)](https://github.com/yezz123/DogeAPI/actions/workflows/backend.yaml)
-[![Frontend](https://github.com/yezz123/DogeAPI/actions/workflows/frontend.yml/badge.svg)](https://github.com/yezz123/DogeAPI/actions/workflows/frontend.yml)
-[![Admin](https://github.com/yezz123/DogeAPI/actions/workflows/admin.yml/badge.svg)](https://github.com/yezz123/DogeAPI/actions/workflows/admin.yml)
+[![Frontend](https://github.com/yezz123/DogeAPI/actions/workflows/frontend.yaml/badge.svg)](https://github.com/yezz123/DogeAPI/actions/workflows/frontend.yaml)
+[![Admin](https://github.com/yezz123/DogeAPI/actions/workflows/admin.yaml/badge.svg)](https://github.com/yezz123/DogeAPI/actions/workflows/admin.yaml)
 
 ## What you get
 
