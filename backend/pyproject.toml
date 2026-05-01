@@ -43,7 +43,7 @@ stripe = [
     "stripe>=11.2.0",
 ]
 logfire = [
-    "logfire[fastapi,sqlalchemy,redis,httpx]>=2.5.0",
+    "logfire[fastapi,sqlalchemy,redis,httpx]>=4.32.1",
 ]
 all = [
     "dogeapi[email,oauth,ai,stripe,logfire]",
