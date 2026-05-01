@@ -9,7 +9,7 @@ authors = [{ name = "Yasser Tahiri", email = "hello@yezz.me" }]
 
 dependencies = [
     "fastapi>=0.115.0",
-    "uvicorn[standard]>=0.32.0",
+    "uvicorn[standard]>=0.46.0",
     "pydantic>=2.9.0",
     "pydantic-settings>=2.6.0",
     "authx==1.6.0",
