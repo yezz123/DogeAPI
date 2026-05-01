@@ -39,6 +39,6 @@
     "@vitejs/plugin-react": "^4.3.4",
     "@testing-library/react": "^16.1.0",
     "@testing-library/jest-dom": "^6.6.3",
-    "jsdom": "^25.0.1"
+    "jsdom": "^29.1.1"
   }
 }
