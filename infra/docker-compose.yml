@@ -1,0 +1,161 @@
+name: dogeapi
+
+# ─── Shared anchors ──────────────────────────────────────────────────────
+x-app-env: &app-env
+  # `.env` is optional — copy `.env.example` to `.env` to populate. The
+  # explicit per-service `environment:` blocks below cover the values that
+  # docker compose itself needs to wire the network.
+  env_file:
+    - path: ../.env
+      required: false
+  restart: unless-stopped
+
+x-backend-build: &backend-build
+  context: ../backend
+  dockerfile: Dockerfile
+
+# Public env vars baked into the Next.js bundles at build time. Compose
+# substitutes from the shell or `.env` in this directory; defaults below
+# match `.env.sample`.
+x-frontend-public-args: &frontend-public-args
+  NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-http://localhost:8000}
+  NEXT_PUBLIC_APP_NAME: ${NEXT_PUBLIC_APP_NAME:-DogeAPI}
+  NEXT_PUBLIC_FEATURE_OAUTH: ${NEXT_PUBLIC_FEATURE_OAUTH:-false}
+  NEXT_PUBLIC_FEATURE_MAGIC_LINK: ${NEXT_PUBLIC_FEATURE_MAGIC_LINK:-false}
+  NEXT_PUBLIC_FEATURE_AI_CHAT: ${NEXT_PUBLIC_FEATURE_AI_CHAT:-false}
+  NEXT_PUBLIC_FEATURE_STRIPE: ${NEXT_PUBLIC_FEATURE_STRIPE:-false}
+  NEXT_PUBLIC_FEATURE_API_KEYS: ${NEXT_PUBLIC_FEATURE_API_KEYS:-true}
+  NEXT_PUBLIC_FEATURE_AUDIT_LOG: ${NEXT_PUBLIC_FEATURE_AUDIT_LOG:-true}
+
+# ─── Services ────────────────────────────────────────────────────────────
+services:
+  # ── Infra ──────────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-dogeapi}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dogeapi}
+      POSTGRES_DB: ${POSTGRES_DB:-dogeapi}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-dogeapi} -d ${POSTGRES_DB:-dogeapi}",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  mailpit:
+    image: axllent/mailpit:latest
+    restart: unless-stopped
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    environment:
+      MP_MAX_MESSAGES: 5000
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+
+  # ── Backend ────────────────────────────────────────────────────────────
+  # One-shot job: runs `alembic upgrade head` and exits. The backend
+  # service waits for this to complete successfully before starting.
+  migrate:
+    <<: *app-env
+    build: *backend-build
+    image: dogeapi-backend:latest
+    pull_policy: never
+    restart: "no"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: postgres
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-dogeapi}:${POSTGRES_PASSWORD:-dogeapi}@postgres:5432/${POSTGRES_DB:-dogeapi}
+      DATABASE_URL_SYNC: postgresql+psycopg://${POSTGRES_USER:-dogeapi}:${POSTGRES_PASSWORD:-dogeapi}@postgres:5432/${POSTGRES_DB:-dogeapi}
+    command: ["alembic", "upgrade", "head"]
+
+  backend:
+    <<: *app-env
+    build: *backend-build
+    image: dogeapi-backend:latest
+    pull_policy: never
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
+      migrate:
+        condition: service_completed_successfully
+    environment:
+      POSTGRES_HOST: postgres
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-dogeapi}:${POSTGRES_PASSWORD:-dogeapi}@postgres:5432/${POSTGRES_DB:-dogeapi}
+      DATABASE_URL_SYNC: postgresql+psycopg://${POSTGRES_USER:-dogeapi}:${POSTGRES_PASSWORD:-dogeapi}@postgres:5432/${POSTGRES_DB:-dogeapi}
+      REDIS_URL: redis://redis:6379/0
+      SMTP_HOST: mailpit
+      SMTP_PORT: "1025"
+      APP_BASE_URL: ${APP_BASE_URL:-http://backend:8000}
+    ports:
+      - "8000:8000"
+
+  # ── Frontends ──────────────────────────────────────────────────────────
+  frontend:
+    <<: *app-env
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+      args: *frontend-public-args
+    image: dogeapi-frontend:latest
+    pull_policy: never
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      # Used at runtime by Next.js rewrites in next.config.ts.
+      NEXT_PUBLIC_API_BASE_URL: http://backend:8000
+    ports:
+      - "3000:3000"
+
+  admin:
+    <<: *app-env
+    build:
+      context: ../admin
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-http://localhost:8000}
+        NEXT_PUBLIC_APP_NAME: ${NEXT_PUBLIC_APP_NAME_ADMIN:-DogeAPI Admin}
+    image: dogeapi-admin:latest
+    pull_policy: never
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: http://backend:8000
+    ports:
+      - "3001:3001"
+
+volumes:
+  postgres_data:
+  redis_data:
