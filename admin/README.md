@@ -1,4 +1,4 @@
-# DogeAPI Admin Portal
+# AI Template Admin Portal
 
 Next.js 16 super-admin console for SaaS operators. Same stack as the tenant
 frontend (Tailwind v4 + Framer Motion + Zod) on a separate port. Managed with

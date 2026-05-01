@@ -7,9 +7,11 @@ export default function HomePage() {
         <p className="text-xs uppercase tracking-widest text-accent">
           Operator console
         </p>
-        <h1 className="text-5xl font-semibold tracking-tight">DogeAPI Admin</h1>
+        <h1 className="text-5xl font-semibold tracking-tight">
+          AI Template Admin
+        </h1>
         <p className="text-base text-muted-foreground">
-          Super-admin portal for the DogeAPI control plane.
+          Super-admin portal for the AI Template control plane.
         </p>
       </div>
 

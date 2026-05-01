@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "DogeAPI Admin",
-  description: "DogeAPI super-admin portal",
+  title: "AI Template Admin",
+  description: "AI Template super-admin portal",
 };
 
 export default function RootLayout({

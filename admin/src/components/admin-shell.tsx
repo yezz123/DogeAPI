@@ -59,7 +59,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
           <p className="text-xs uppercase tracking-widest text-accent">
             Operator console
           </p>
-          <h1 className="text-lg font-semibold">DogeAPI Admin</h1>
+          <h1 className="text-lg font-semibold">AI Template Admin</h1>
         </div>
         <AdminSidebar />
         <div className="mt-8 space-y-2 border-t border-border pt-4 text-xs text-muted-foreground">

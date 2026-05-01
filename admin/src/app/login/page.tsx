@@ -78,7 +78,7 @@ export default function AdminLoginPage() {
             </p>
             <CardTitle>Admin sign in</CardTitle>
             <CardDescription>
-              Restricted to DogeAPI super-admins.
+              Restricted to AI Template super-admins.
             </CardDescription>
           </CardHeader>
           <CardContent>
