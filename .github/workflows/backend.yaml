@@ -24,7 +24,7 @@ jobs:
     name: Lint + format check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: astral-sh/setup-uv@v4
         with:
           enable-cache: true
@@ -37,7 +37,7 @@ jobs:
   #   name: Mypy
   #   runs-on: ubuntu-latest
   #   steps:
-  #     - uses: actions/checkout@v4
+  #     - uses: actions/checkout@v6
   #     - uses: astral-sh/setup-uv@v4
   #       with:
   #         enable-cache: true
@@ -75,7 +75,7 @@ jobs:
       DATABASE_URL_SYNC: postgresql://dogeapi:dogeapi@localhost:5432/dogeapi_test
       REDIS_URL: redis://localhost:6379/15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: astral-sh/setup-uv@v4
         with:
           enable-cache: true
