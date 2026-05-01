@@ -876,7 +876,7 @@ requires-dist = [
     { name = "python-multipart", specifier = ">=0.0.17" },
     { name = "redis", specifier = ">=5.2.0" },
     { name = "resend", marker = "extra == 'email'", specifier = ">=2.4.0" },
-    { name = "sqlalchemy", extras = ["asyncio"], specifier = ">=2.0.36" },
+    { name = "sqlalchemy", extras = ["asyncio"], specifier = ">=2.0.49" },
     { name = "stripe", marker = "extra == 'stripe'", specifier = ">=11.2.0" },
     { name = "structlog", specifier = ">=24.4.0" },
     { name = "tiktoken", marker = "extra == 'ai'", specifier = ">=0.8.0" },
