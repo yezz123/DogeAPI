@@ -36,7 +36,7 @@ oauth = [
     "itsdangerous>=2.2.0",
 ]
 ai = [
-    "pydantic-ai>=0.0.13",
+    "pydantic-ai>=1.89.0",
     "tiktoken>=0.8.0",
 ]
 stripe = [
