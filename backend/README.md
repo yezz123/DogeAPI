@@ -1,6 +1,6 @@
 # Backend
 
-FastAPI + authx-powered backend for the DogeAPI multi-tenant SaaS boilerplate.
+FastAPI + authx-powered backend for the AI Template multi-tenant SaaS boilerplate.
 
 ## Quick start
 

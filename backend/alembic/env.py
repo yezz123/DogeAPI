@@ -1,4 +1,4 @@
-"""Alembic env.py for the DogeAPI backend.
+"""Alembic env.py for the AI Template backend.
 
 Reads the DATABASE_URL_SYNC from app settings at runtime so migrations and
 the application share a single source of truth.

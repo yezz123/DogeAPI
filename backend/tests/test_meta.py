@@ -27,7 +27,7 @@ class TestRoot:
         response = await client.get("/")
         assert response.status_code == 200
         body = response.json()
-        assert body["name"] == "DogeAPI"
+        assert body["name"] == "AI Template"
         assert "version" in body
 
 
@@ -38,4 +38,4 @@ class TestOpenAPI:
         response = await client.get("/openapi.json")
         assert response.status_code == 200
         schema = response.json()
-        assert schema["info"]["title"] == "DogeAPI"
+        assert schema["info"]["title"] == "AI Template"

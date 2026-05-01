@@ -1,4 +1,4 @@
-"""Typed settings for DogeAPI.
+"""Typed settings for AI Template.
 
 Every feature flag here gates an entire module. The app factory in
 :mod:`dogeapi.main` only registers a feature's router when the corresponding
@@ -33,7 +33,7 @@ class Settings(BaseSettings):
     )
 
     APP_ENV: EnvName = "development"
-    APP_NAME: str = "DogeAPI"
+    APP_NAME: str = "AI Template"
     APP_BASE_URL: str = "http://localhost:8000"
     FRONTEND_BASE_URL: str = "http://localhost:3000"
     ADMIN_BASE_URL: str = "http://localhost:3001"
@@ -63,7 +63,7 @@ class Settings(BaseSettings):
     FEATURE_STRIPE: bool = False
 
     EMAIL_PROVIDER: EmailProvider = "smtp"
-    EMAIL_FROM: str = "DogeAPI <noreply@dogeapi.local>"
+    EMAIL_FROM: str = "AI Template <noreply@dogeapi.local>"
     RESEND_API_KEY: str = ""
     SMTP_HOST: str = "localhost"
     SMTP_PORT: int = 1025
