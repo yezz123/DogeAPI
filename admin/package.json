@@ -19,7 +19,7 @@
     "react-dom": "^19.2.0",
     "framer-motion": "^12.23.0",
     "zod": "^3.24.1",
-    "lucide-react": "^0.475.0",
+    "lucide-react": "^1.14.0",
     "clsx": "^2.1.1",
     "tailwind-merge": "^2.6.0",
     "class-variance-authority": "^0.7.1"
