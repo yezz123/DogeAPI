@@ -869,7 +869,7 @@ requires-dist = [
     { name = "itsdangerous", marker = "extra == 'oauth'", specifier = ">=2.2.0" },
     { name = "jinja2", specifier = ">=3.1.4" },
     { name = "logfire", extras = ["fastapi", "sqlalchemy", "redis", "httpx"], marker = "extra == 'logfire'", specifier = ">=4.32.1" },
-    { name = "psycopg", extras = ["binary"], specifier = ">=3.2.0" },
+    { name = "psycopg", extras = ["binary"], specifier = ">=3.3.3" },
     { name = "pydantic", specifier = ">=2.9.0" },
     { name = "pydantic-ai", marker = "extra == 'ai'", specifier = ">=1.89.0" },
     { name = "pydantic-settings", specifier = ">=2.6.0" },
