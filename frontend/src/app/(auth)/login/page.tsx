@@ -67,7 +67,9 @@ export default function LoginPage() {
       <Card>
         <CardHeader>
           <CardTitle>Welcome back</CardTitle>
-          <CardDescription>Sign in to your DogeAPI workspace.</CardDescription>
+          <CardDescription>
+            Sign in to your AI Template workspace.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">

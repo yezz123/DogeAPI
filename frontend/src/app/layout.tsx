@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "DogeAPI",
+  title: "AI Template",
   description: "Multi-tenant SaaS boilerplate",
 };
 

@@ -24,7 +24,7 @@ WORKDIR /app
 # Public env vars must be present at build time so they get inlined into
 # the bundle. Pass via --build-arg or compose `args:`.
 ARG NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
-ARG NEXT_PUBLIC_APP_NAME=DogeAPI
+ARG NEXT_PUBLIC_APP_NAME=AI Template
 ARG NEXT_PUBLIC_FEATURE_OAUTH=false
 ARG NEXT_PUBLIC_FEATURE_MAGIC_LINK=false
 ARG NEXT_PUBLIC_FEATURE_AI_CHAT=false

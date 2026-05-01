@@ -10,7 +10,7 @@ export default function AuthLayout({
       <header className="border-b border-border">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           <Link href="/" className="text-lg font-semibold tracking-tight">
-            DogeAPI
+            AI Template
           </Link>
           <nav className="flex gap-2 text-sm">
             <Link href="/login" className="px-3 py-1.5 hover:underline">

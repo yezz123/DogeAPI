@@ -1,4 +1,4 @@
-# DogeAPI Frontend
+# AI Template Frontend
 
 Next.js 16 (App Router, Turbopack default) tenant-facing SaaS UI. Tailwind v4,
 Framer Motion, Zod. Managed with [bun](https://bun.com).

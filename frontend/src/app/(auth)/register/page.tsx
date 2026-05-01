@@ -75,7 +75,7 @@ export default function RegisterPage() {
         <CardHeader>
           <CardTitle>Create your account</CardTitle>
           <CardDescription>
-            Spin up a new DogeAPI workspace in seconds.
+            Spin up a new AI Template workspace in seconds.
           </CardDescription>
         </CardHeader>
         <CardContent>
