@@ -868,7 +868,7 @@ requires-dist = [
     { name = "httpx", specifier = ">=0.27.0" },
     { name = "itsdangerous", marker = "extra == 'oauth'", specifier = ">=2.2.0" },
     { name = "jinja2", specifier = ">=3.1.4" },
-    { name = "logfire", extras = ["fastapi", "sqlalchemy", "redis", "httpx"], marker = "extra == 'logfire'", specifier = ">=2.5.0" },
+    { name = "logfire", extras = ["fastapi", "sqlalchemy", "redis", "httpx"], marker = "extra == 'logfire'", specifier = ">=4.32.1" },
     { name = "psycopg", extras = ["binary"], specifier = ">=3.2.0" },
     { name = "pydantic", specifier = ">=2.9.0" },
     { name = "pydantic-ai", marker = "extra == 'ai'", specifier = ">=0.0.13" },
