@@ -1,10 +1,10 @@
-# DogeAPI
+# AI Template
 
 > Multi-tenant SaaS boilerplate built on FastAPI + [authx](https://github.com/yezz123/authx) + Next.js. Every feature toggleable via env vars; ship a production-ready SaaS in a weekend.
 
-[![Backend](https://github.com/yezz123/DogeAPI/actions/workflows/backend.yaml/badge.svg)](https://github.com/yezz123/DogeAPI/actions/workflows/backend.yaml)
-[![Frontend](https://github.com/yezz123/DogeAPI/actions/workflows/frontend.yaml/badge.svg)](https://github.com/yezz123/DogeAPI/actions/workflows/frontend.yaml)
-[![Admin](https://github.com/yezz123/DogeAPI/actions/workflows/admin.yaml/badge.svg)](https://github.com/yezz123/DogeAPI/actions/workflows/admin.yaml)
+[![Backend](https://github.com/yezz123/ai-template/actions/workflows/backend.yaml/badge.svg)](https://github.com/yezz123/ai-template/actions/workflows/backend.yaml)
+[![Frontend](https://github.com/yezz123/ai-template/actions/workflows/frontend.yaml/badge.svg)](https://github.com/yezz123/ai-template/actions/workflows/frontend.yaml)
+[![Admin](https://github.com/yezz123/ai-template/actions/workflows/admin.yaml/badge.svg)](https://github.com/yezz123/ai-template/actions/workflows/admin.yaml)
 
 ## What you get
 
@@ -18,7 +18,7 @@
 ## Repository layout
 
 ```
-DogeAPI/
+ai-template/
 ├── backend/         FastAPI + authx + SQLAlchemy + Alembic (uv-managed)
 ├── frontend/        Next.js 16 tenant-facing app (Tailwind v4, Framer Motion, Zod)
 ├── admin/           Next.js 16 super-admin portal
@@ -43,7 +43,7 @@ Prereqs: **uv** &ge; 0.5, **bun** &ge; 1.3, **Docker**.
 ### Option A: run everything with Docker (recommended)
 
 ```bash
-git clone https://github.com/yezz123/DogeAPI && cd DogeAPI
+git clone https://github.com/yezz123/ai-template && cd ai-template
 cp .env.example .env
 
 make stack-build
@@ -63,7 +63,7 @@ make stack-logs
 ### Option B: run infra in Docker + apps locally (fast inner loop)
 
 ```bash
-git clone https://github.com/yezz123/DogeAPI && cd DogeAPI
+git clone https://github.com/yezz123/ai-template && cd ai-template
 cp .env.example .env
 
 make bootstrap          # uv sync + bun install
