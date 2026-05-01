@@ -3,19 +3,51 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
+    groups:
+      python-packages:
+        patterns:
+          - "*"
+    commit-message:
+      prefix: ⬆
+    labels:
+      - "upgrade"
 
   - package-ecosystem: "uv"
     directory: "/backend"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
+    groups:
+      python-packages:
+        patterns:
+          - "*"
+    commit-message:
+      prefix: ⬆
+    labels:
+      - "upgrade"
 
   - package-ecosystem: "bun"
     directory: "/frontend"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
+    groups:
+      bun-packages:
+        patterns:
+          - "*"
+    commit-message:
+      prefix: ⬆
+    labels:
+      - "upgrade"
 
   - package-ecosystem: "bun"
     directory: "/admin"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
+    groups:
+      bun-packages:
+        patterns:
+          - "*"
+    commit-message:
+      prefix: ⬆
+    labels:
+      - "upgrade"
