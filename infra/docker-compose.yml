@@ -19,7 +19,7 @@ x-backend-build: &backend-build
 # match `.env.sample`.
 x-frontend-public-args: &frontend-public-args
   NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-http://localhost:8000}
-  NEXT_PUBLIC_APP_NAME: ${NEXT_PUBLIC_APP_NAME:-DogeAPI}
+  NEXT_PUBLIC_APP_NAME: ${NEXT_PUBLIC_APP_NAME:-AI Template}
   NEXT_PUBLIC_FEATURE_OAUTH: ${NEXT_PUBLIC_FEATURE_OAUTH:-false}
   NEXT_PUBLIC_FEATURE_MAGIC_LINK: ${NEXT_PUBLIC_FEATURE_MAGIC_LINK:-false}
   NEXT_PUBLIC_FEATURE_AI_CHAT: ${NEXT_PUBLIC_FEATURE_AI_CHAT:-false}
@@ -145,7 +145,7 @@ services:
       dockerfile: Dockerfile
       args:
         NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-http://localhost:8000}
-        NEXT_PUBLIC_APP_NAME: ${NEXT_PUBLIC_APP_NAME_ADMIN:-DogeAPI Admin}
+        NEXT_PUBLIC_APP_NAME: ${NEXT_PUBLIC_APP_NAME_ADMIN:-AI Template Admin}
     image: dogeapi-admin:latest
     pull_policy: never
     depends_on:

@@ -1,4 +1,4 @@
--- Initial Postgres setup for DogeAPI.
+-- Initial Postgres setup for AI Template.
 -- Extensions are created at boot so Alembic migrations can rely on them.
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
