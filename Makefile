@@ -41,8 +41,24 @@ dev-admin:  ## Run Next.js admin portal
 
 # ─── Docker compose ───────────────────────────────────────────────────────
 .PHONY: up
-up:  ## Start postgres + redis + mailpit
+up:  ## Start postgres + redis + mailpit (infra only; for local dev)
 	docker compose -f infra/docker-compose.yml up -d postgres redis mailpit
+
+.PHONY: stack-build
+stack-build:  ## Build all app images (backend + frontend + admin)
+	docker compose -f infra/docker-compose.yml build backend frontend admin
+
+.PHONY: stack-up
+stack-up:  ## Start the full stack (infra + apps) end-to-end
+	docker compose -f infra/docker-compose.yml up -d
+
+.PHONY: stack-logs
+stack-logs:  ## Tail all stack logs
+	docker compose -f infra/docker-compose.yml logs -f
+
+.PHONY: stack-ps
+stack-ps:  ## Show stack status
+	docker compose -f infra/docker-compose.yml ps
 
 .PHONY: down
 down:  ## Stop and remove containers
