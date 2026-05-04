@@ -61,6 +61,11 @@ class Settings(BaseSettings):
     FEATURE_AI_CHAT: bool = False
     FEATURE_LOGFIRE: bool = False
     FEATURE_STRIPE: bool = False
+    FEATURE_HTTRACE: bool = False
+
+    HTTRACE_API_KEY: str = ""
+    HTTRACE_SERVICE: str = "ai-template"
+    HTTRACE_SAMPLE_RATE: float = 0.1
 
     EMAIL_PROVIDER: EmailProvider = "smtp"
     EMAIL_FROM: str = "AI Template <noreply@dogeapi.local>"

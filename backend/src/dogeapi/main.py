@@ -162,6 +162,17 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
         app.include_router(ai_router)
 
+    if settings.FEATURE_HTTRACE and settings.HTTRACE_API_KEY:
+        from httrace import HttraceCaptureMiddleware
+
+        app.add_middleware(
+            HttraceCaptureMiddleware,
+            api_key=settings.HTTRACE_API_KEY,
+            service=settings.HTTRACE_SERVICE,
+            sample_rate=settings.HTTRACE_SAMPLE_RATE,
+            exclude_paths=["/healthz", "/metrics", "/favicon.ico"],
+        )
+
     # Admin endpoints are always-on; the dependency rejects non-superadmins.
     from dogeapi.admin.router import router as admin_router
 

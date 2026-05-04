@@ -45,8 +45,11 @@ stripe = [
 logfire = [
     "logfire[fastapi,sqlalchemy,redis,httpx]>=4.32.1",
 ]
+httrace = [
+    "httrace>=0.1.1",
+]
 all = [
-    "dogeapi[email,oauth,ai,stripe,logfire]",
+    "dogeapi[email,oauth,ai,stripe,logfire,httrace]",
 ]
 
 [dependency-groups]
@@ -114,7 +117,7 @@ disallow_untyped_defs = true
 exclude = ["alembic/versions/", "tests/"]
 
 [[tool.mypy.overrides]]
-module = ["resend.*", "stripe.*", "authlib.*", "logfire.*", "fastapi_llm_gateway.*"]
+module = ["resend.*", "stripe.*", "authlib.*", "logfire.*", "fastapi_llm_gateway.*", "httrace.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
