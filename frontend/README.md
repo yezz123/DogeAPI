@@ -25,7 +25,13 @@ App lives at `http://localhost:3000`. The backend is proxied at
 
 ## Conventions
 
-- Server-side data fetching via Server Components + Route Handlers
+- Client-side app routes call typed helpers in `src/lib` through the `/api/backend/*` rewrite
 - Forms validated with Zod (shared schemas in `src/lib/validators.ts`)
 - Auth lives in cookies (httpOnly + CSRF token, set by FastAPI/authx)
 - Feature visibility gated by `NEXT_PUBLIC_FEATURE_*` env vars
+
+## Experience surface
+
+- Landing page introduces the boilerplate, stack, and first-run path.
+- Dashboard is the first tenant hub for organizations and empty states.
+- Org navigation hides modules whose `NEXT_PUBLIC_FEATURE_*` flags are disabled.

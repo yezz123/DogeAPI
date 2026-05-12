@@ -15,6 +15,10 @@ bun run dev
 App lives at `http://localhost:3001`. Only users marked
 `is_superadmin = true` (and presenting an `admin:*` JWT scope) can sign in.
 
+The admin portal is intentionally separate from the tenant app so operators can
+monitor tenants, users, audit events, and dependency health without mixing
+tenant-facing navigation into super-admin workflows.
+
 ## Scripts
 
 - `bun run dev` &mdash; dev server (Turbopack, default in Next.js 16)
