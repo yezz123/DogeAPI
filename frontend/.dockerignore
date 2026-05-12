@@ -8,7 +8,7 @@ out/
 next-env.d.ts
 .env
 .env.*
-!.env.sample
+!.env.example
 .git/
 .github/
 .idea/

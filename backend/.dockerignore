@@ -13,7 +13,7 @@ coverage.xml
 .cache/
 .env
 .env.*
-!.env.sample
+!.env.example
 tests/
 docs/
 .git/
