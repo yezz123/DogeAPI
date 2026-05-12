@@ -5,17 +5,33 @@ import { motion } from "framer-motion";
 import { AdminShell } from "@/components/admin-shell";
 import { getSystemHealth, type SystemHealth } from "@/lib/admin";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  AdminPageHeader,
+  InlineError,
+  StatusPill,
+} from "@/components/admin-state";
 import { cn } from "@/lib/utils";
 import type { ApiError } from "@/lib/api";
 
 export default function SystemHealthPage() {
   const [health, setHealth] = useState<SystemHealth | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [updatedAt, setUpdatedAt] = useState<Date | null>(null);
+
+  async function reload() {
+    try {
+      setError(null);
+      const next = await getSystemHealth();
+      setHealth(next);
+      setUpdatedAt(new Date());
+    } catch (err) {
+      setError((err as ApiError).detail ?? "Failed to load");
+    }
+  }
 
   useEffect(() => {
-    getSystemHealth()
-      .then(setHealth)
-      .catch((err: ApiError) => setError(err.detail ?? "Failed to load"));
+    reload();
   }, []);
 
   return (
@@ -26,21 +42,47 @@ export default function SystemHealthPage() {
         transition={{ duration: 0.25 }}
         className="space-y-6"
       >
-        <header>
-          <h1 className="text-3xl font-semibold tracking-tight">
-            System health
-          </h1>
-        </header>
+        <AdminPageHeader
+          eyebrow="Readiness"
+          title="System health"
+          description="Dependency state and platform totals from the backend admin health endpoint."
+          actions={
+            <Button type="button" variant="secondary" onClick={reload}>
+              Refresh
+            </Button>
+          }
+        />
 
-        {error && <p className="text-sm text-destructive">{error}</p>}
+        {error && <InlineError message={error} />}
 
-        {health && (
+        {updatedAt && (
+          <p className="font-mono text-xs text-muted-foreground">
+            Last updated {updatedAt.toLocaleTimeString()}
+          </p>
+        )}
+
+        {health ? (
           <div className="grid gap-3 sm:grid-cols-2">
             <StatusCard label="Database" ok={health.db_ok} />
             <StatusCard label="Redis" ok={health.redis_ok} />
             <Counter label="Total tenants" value={health.total_orgs} />
             <Counter label="Total users" value={health.total_users} />
             <Counter label="Total API keys" value={health.total_api_keys} />
+          </div>
+        ) : (
+          <div className="grid gap-3 sm:grid-cols-2">
+            {["Database", "Redis", "Total tenants", "Total users"].map(
+              (label) => (
+                <Card key={label}>
+                  <CardHeader>
+                    <CardTitle className="text-base">{label}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="h-8 w-20 animate-pulse rounded-full bg-background/60" />
+                  </CardContent>
+                </Card>
+              ),
+            )}
           </div>
         )}
       </motion.section>
@@ -55,22 +97,15 @@ function StatusCard({ label, ok }: { label: string; ok: boolean }) {
         <CardTitle className="text-base">{label}</CardTitle>
       </CardHeader>
       <CardContent>
-        <span
-          className={cn(
-            "inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wider",
-            ok
-              ? "bg-accent/30 text-accent-foreground"
-              : "bg-destructive/40 text-destructive-foreground",
-          )}
-        >
+        <StatusPill tone={ok ? "success" : "danger"}>
           <span
             className={cn(
               "h-2 w-2 rounded-full",
-              ok ? "bg-accent" : "bg-destructive",
+              ok ? "bg-success" : "bg-destructive",
             )}
           />
           {ok ? "OK" : "Down"}
-        </span>
+        </StatusPill>
       </CardContent>
     </Card>
   );

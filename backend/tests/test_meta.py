@@ -20,6 +20,18 @@ class TestHealthz:
         assert response.json()["env"] == "test"
 
 
+class TestReadyz:
+    """Readiness probe verifies backing services."""
+
+    async def test_returns_dependency_status(self, client: AsyncClient) -> None:
+        response = await client.get("/readyz")
+        assert response.status_code == 200
+        body = response.json()
+        assert body["status"] == "ready"
+        assert body["db_ok"] is True
+        assert body["redis_ok"] is True
+
+
 class TestRoot:
     """Service identity endpoint."""
 

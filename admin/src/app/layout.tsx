@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "AI Template Admin",
-  description: "AI Template super-admin portal",
+  description: "AI Template super-admin operator console",
 };
 
 export default function RootLayout({

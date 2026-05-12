@@ -5,10 +5,13 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { listMembers, type Member } from "@/lib/orgs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { FeatureBadge, PageHeader } from "@/components/page-state";
+import { useOrgContext } from "@/lib/org-context";
 
 export default function OrgOverviewPage() {
   const params = useParams<{ slug: string }>();
   const slug = params?.slug as string;
+  const { org } = useOrgContext();
   const [members, setMembers] = useState<Member[] | null>(null);
 
   useEffect(() => {
@@ -25,7 +28,11 @@ export default function OrgOverviewPage() {
       transition={{ duration: 0.25 }}
       className="space-y-6"
     >
-      <h1 className="text-2xl font-semibold tracking-tight">Overview</h1>
+      <PageHeader
+        eyebrow="Workspace overview"
+        title={org?.name ?? "Overview"}
+        description="A compact view of the tenant boundary: people, plan, and operational status."
+      />
 
       <div className="grid gap-4 sm:grid-cols-3">
         <Card>
@@ -34,7 +41,7 @@ export default function OrgOverviewPage() {
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-semibold tracking-tight">
-              {members?.length ?? "—"}
+              {members?.length ?? "-"}
             </p>
           </CardContent>
         </Card>
@@ -43,7 +50,7 @@ export default function OrgOverviewPage() {
             <CardTitle className="text-base">Plan</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-lg">Free</p>
+            <FeatureBadge tone="accent">{org?.plan ?? "Free"}</FeatureBadge>
           </CardContent>
         </Card>
         <Card>
@@ -51,7 +58,7 @@ export default function OrgOverviewPage() {
             <CardTitle className="text-base">Status</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-lg">Active</p>
+            <FeatureBadge tone="success">Active</FeatureBadge>
           </CardContent>
         </Card>
       </div>

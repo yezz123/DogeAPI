@@ -7,6 +7,12 @@ import { logout, me, type User } from "@/lib/auth";
 import { switchOrg } from "@/lib/orgs";
 import { OrgContextProvider, useOrgContext } from "@/lib/org-context";
 import { Button } from "@/components/ui/button";
+import {
+  ErrorState,
+  FeatureBadge,
+  LoadingState,
+} from "@/components/page-state";
+import { frontendFeatures } from "@/lib/features";
 import { cn } from "@/lib/utils";
 import type { ApiError } from "@/lib/api";
 
@@ -39,57 +45,77 @@ function OrgChrome({ children }: { children: React.ReactNode }) {
 
   if (chromeError || error) {
     return (
-      <main className="mx-auto max-w-2xl px-6 py-16">
-        <p className="text-sm text-destructive">{chromeError ?? error}</p>
-      </main>
+      <ErrorState
+        message={chromeError ?? error ?? "Failed to load organization"}
+        actionHref="/dashboard"
+        actionLabel="Back to organizations"
+      />
     );
   }
 
   if (loading || !org || !user) {
-    return (
-      <main className="mx-auto max-w-2xl px-6 py-16">
-        <p className="text-sm text-muted-foreground">Loading…</p>
-      </main>
-    );
+    return <LoadingState label="Opening workspace" />;
   }
 
   const navItems = [
-    { href: `/orgs/${slug}`, label: "Overview" },
-    { href: `/orgs/${slug}/members`, label: "Members" },
-    { href: `/orgs/${slug}/invitations`, label: "Invitations" },
-    { href: `/orgs/${slug}/api-keys`, label: "API keys" },
-    { href: `/orgs/${slug}/audit-log`, label: "Audit log" },
-    { href: `/orgs/${slug}/billing`, label: "Billing" },
-    { href: `/orgs/${slug}/ai`, label: "AI chat" },
-    { href: `/orgs/${slug}/ai/agents`, label: "AI agents" },
-    { href: `/orgs/${slug}/settings`, label: "Settings" },
-  ];
+    { href: `/orgs/${slug}`, label: "Overview", enabled: true },
+    { href: `/orgs/${slug}/members`, label: "Members", enabled: true },
+    { href: `/orgs/${slug}/invitations`, label: "Invitations", enabled: true },
+    {
+      href: `/orgs/${slug}/api-keys`,
+      label: "API keys",
+      enabled: frontendFeatures.apiKeys,
+    },
+    {
+      href: `/orgs/${slug}/audit-log`,
+      label: "Audit log",
+      enabled: frontendFeatures.auditLog,
+    },
+    {
+      href: `/orgs/${slug}/billing`,
+      label: "Billing",
+      enabled: frontendFeatures.stripe,
+    },
+    {
+      href: `/orgs/${slug}/ai`,
+      label: "AI chat",
+      enabled: frontendFeatures.aiChat,
+    },
+    {
+      href: `/orgs/${slug}/ai/agents`,
+      label: "AI agents",
+      enabled: frontendFeatures.aiChat,
+    },
+    { href: `/orgs/${slug}/settings`, label: "Settings", enabled: true },
+  ].filter((item) => item.enabled);
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <header className="border-b border-border">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
-          <div className="flex items-center gap-3">
+    <div className="min-h-screen">
+      <header className="border-b border-border bg-background/80 backdrop-blur-md">
+        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-6 py-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex flex-wrap items-center gap-3">
             <Link
               href="/dashboard"
-              className="text-sm text-muted-foreground hover:underline"
+              className="rounded-full border border-border bg-background/70 px-3 py-1.5 text-sm text-muted-foreground transition hover:bg-muted hover:text-foreground"
             >
-              ← All organizations
+              All organizations
             </Link>
             <span className="text-muted-foreground">/</span>
-            <span className="font-semibold">{org.name}</span>
-            <span className="rounded-full border border-border px-2 py-0.5 text-xs uppercase tracking-wider text-muted-foreground">
-              {org.role}
+            <span className="text-lg font-semibold tracking-tight">
+              {org.name}
             </span>
+            <FeatureBadge tone="success">{org.role}</FeatureBadge>
           </div>
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-muted-foreground">{user.email}</span>
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="font-mono text-xs text-muted-foreground">
+              {user.email}
+            </span>
             <Button onClick={handleLogout} variant="ghost" size="sm">
               Sign out
             </Button>
           </div>
         </div>
-        <nav className="mx-auto flex max-w-6xl gap-1 px-6">
+        <nav className="mx-auto flex max-w-7xl gap-1 overflow-x-auto px-6">
           {navItems.map((item) => {
             const active = pathname === item.href;
             return (
@@ -97,7 +123,7 @@ function OrgChrome({ children }: { children: React.ReactNode }) {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "border-b-2 px-3 py-2 text-sm transition",
+                  "whitespace-nowrap border-b-2 px-3 py-3 text-sm font-medium transition",
                   active
                     ? "border-primary font-medium text-foreground"
                     : "border-transparent text-muted-foreground hover:text-foreground",
@@ -109,7 +135,7 @@ function OrgChrome({ children }: { children: React.ReactNode }) {
           })}
         </nav>
       </header>
-      <div className="mx-auto w-full max-w-6xl flex-1 px-6 py-8">
+      <div className="mx-auto w-full max-w-7xl flex-1 px-6 py-8">
         {children}
       </div>
     </div>
@@ -136,19 +162,11 @@ export default function OrgLayout({ children }: { children: React.ReactNode }) {
   }, [slug, router]);
 
   if (error) {
-    return (
-      <main className="mx-auto max-w-2xl px-6 py-16">
-        <p className="text-sm text-destructive">{error}</p>
-      </main>
-    );
+    return <ErrorState message={error} actionHref="/dashboard" />;
   }
 
   if (!ready) {
-    return (
-      <main className="mx-auto max-w-2xl px-6 py-16">
-        <p className="text-sm text-muted-foreground">Loading…</p>
-      </main>
-    );
+    return <LoadingState label="Switching organization" />;
   }
 
   return (

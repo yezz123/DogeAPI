@@ -7,7 +7,7 @@ repos:
     hooks:
       - id: check-merge-conflict
       - id: check-added-large-files
-        exclude: backend/uv.lock
+        args: [--maxkb=1000]
       - id: check-ast
       - id: check-symlinks
       - id: check-yaml

@@ -1,27 +1,72 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: oklch(13% 0 0);
-  --color-foreground: oklch(98% 0 0);
-  --color-muted: oklch(20% 0 0);
-  --color-muted-foreground: oklch(65% 0 0);
-  --color-border: oklch(25% 0 0);
-  --color-primary: oklch(70% 0.18 50);
-  --color-primary-foreground: oklch(15% 0 0);
-  --color-accent: oklch(75% 0.18 50);
-  --color-accent-foreground: oklch(15% 0 0);
-  --color-destructive: oklch(58% 0.22 27);
-  --color-destructive-foreground: oklch(98% 0 0);
-  --radius: 0.625rem;
-  --font-sans:
-    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica,
-    Arial, sans-serif;
+  --color-background: #faf9f5;
+  --color-foreground: #141413;
+  --color-muted: #efede5;
+  --color-muted-foreground: #6f6c63;
+  --color-border: #dedbd0;
+  --color-primary: #d97757;
+  --color-primary-foreground: #141413;
+  --color-accent: #6a9bcc;
+  --color-accent-foreground: #141413;
+  --color-success: #788c5d;
+  --color-success-foreground: #faf9f5;
+  --color-destructive: #b55345;
+  --color-destructive-foreground: #faf9f5;
+  --radius: 0.875rem;
+  --font-sans: Poppins, Arial, ui-sans-serif, system-ui, sans-serif;
+  --font-serif: Lora, Georgia, ui-serif, serif;
+  --font-mono:
+    "SFMono-Regular", "Roboto Mono", "Cascadia Code", Consolas, monospace;
 }
 
 * {
   border-color: var(--color-border);
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   font-family: var(--font-sans);
+  background:
+    radial-gradient(
+      circle at 8% 8%,
+      color-mix(in srgb, var(--color-primary) 14%, transparent),
+      transparent 30rem
+    ),
+    radial-gradient(
+      circle at 92% 0%,
+      color-mix(in srgb, var(--color-accent) 9%, transparent),
+      transparent 34rem
+    ),
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--color-muted) 46%, transparent),
+      transparent 44%
+    ),
+    var(--color-background);
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--color-primary) 34%, transparent);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }

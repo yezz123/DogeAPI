@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "AI Template",
-  description: "Multi-tenant SaaS boilerplate",
+  description: "Polished multi-tenant SaaS boilerplate for FastAPI and Next.js",
 };
 
 export default function RootLayout({
