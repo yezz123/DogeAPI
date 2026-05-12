@@ -6,6 +6,20 @@
 [![Frontend](https://github.com/yezz123/ai-template/actions/workflows/frontend.yaml/badge.svg)](https://github.com/yezz123/ai-template/actions/workflows/frontend.yaml)
 [![Admin](https://github.com/yezz123/ai-template/actions/workflows/admin.yaml/badge.svg)](https://github.com/yezz123/ai-template/actions/workflows/admin.yaml)
 
+<!-- markdownlint-disable MD033 -->
+<p align="center">
+  <img
+    src=".github/demo.png"
+    alt="AI Template landing page preview"
+    width="900"
+  />
+</p>
+
+<p align="center">
+  <strong>A polished SaaS starter with a FastAPI control plane, tenant app, and admin portal.</strong>
+</p>
+<!-- markdownlint-enable MD033 -->
+
 ## What you get
 
 - **Organizations / Workspaces** with per-org data isolation (every tenant row carries `org_id`).
@@ -17,7 +31,7 @@
 
 ## Repository layout
 
-```
+```text
 ai-template/
 ├── backend/         FastAPI + authx + SQLAlchemy + Alembic (uv-managed)
 ├── frontend/        Next.js 16 tenant-facing app (Tailwind v4, Framer Motion, Zod)
@@ -48,10 +62,16 @@ cp .env.example .env
 
 make stack-build
 make stack-up
+make stack-create-admin email=admin@example.com password=change-me-admin-password
 make stack-ps
 ```
 
+- Gateway: `http://localhost:8080` (Nginx, set `NGINX_PORT` in `.env`)
+- Gateway Admin: `http://localhost:8080/admin/`
+- Gateway API docs: `http://localhost:8080/docs`
 - Backend: `http://localhost:8000` (OpenAPI UI: `http://localhost:8000/docs`)
+- Liveness: `http://localhost:8000/healthz`
+- Readiness: `http://localhost:8000/readyz`
 - Frontend: `http://localhost:3000`
 - Admin: `http://localhost:3001`
 - Mailpit: `http://localhost:8025`
@@ -59,6 +79,10 @@ make stack-ps
 ```bash
 make stack-logs
 ```
+
+Docker Compose is run through `make` with `--env-file .env`, so copy
+`.env.example` to `.env` before building or starting the stack. If `.env` is
+missing, the Makefile falls back to `.env.example` for smoke testing.
 
 ### Option B: run infra in Docker + apps locally (fast inner loop)
 
@@ -69,12 +93,57 @@ cp .env.example .env
 make bootstrap          # uv sync + bun install
 make up                 # postgres + redis + mailpit
 make migrate            # alembic upgrade head
+make create-admin email=admin@example.com password=change-me-admin-password
 
 # In three separate terminals:
 make dev-backend        # http://localhost:8000  (FastAPI + /docs)
 make dev-frontend       # http://localhost:3000  (tenant app)
 make dev-admin          # http://localhost:3001  (super-admin)
 ```
+
+### First 10 minutes
+
+1. Copy `.env.example` to `.env` and keep the default local values.
+2. Run `make bootstrap`, `make up`, then `make migrate`.
+3. Create the first operator: `make create-admin email=admin@example.com password=change-me-admin-password`.
+4. Start `make dev-backend`, `make dev-frontend`, and `make dev-admin` in separate terminals.
+5. Open `http://localhost:3000` to register and create your first organization.
+6. Open `http://localhost:8000/docs` to inspect the API contract.
+7. Open `http://localhost:3001` and sign in with the super-admin credentials.
+
+## Super-admin bootstrap
+
+Create or promote an admin locally:
+
+```bash
+make create-admin email=admin@example.com password=change-me-admin-password
+```
+
+Run the same bootstrap through Docker Compose:
+
+```bash
+make stack-create-admin email=admin@example.com password=change-me-admin-password
+```
+
+The underlying Typer command is idempotent and can also read env vars:
+
+```bash
+cd backend
+ADMIN_EMAIL=admin@example.com ADMIN_PASSWORD=change-me-admin-password uv run dogeapi admin create
+```
+
+## Nginx gateway
+
+The Docker stack includes an Nginx gateway on `NGINX_PORT` (`8080` by default):
+
+- `/` proxies to the tenant frontend.
+- `/admin/` proxies to the admin portal.
+- `/api/backend/*`, `/docs`, `/openapi.json`, `/healthz`, and `/readyz` proxy to FastAPI.
+
+This avoids browser/server confusion around `localhost` inside containers. The
+frontend and admin containers talk to `INTERNAL_API_BASE_URL`
+(`http://backend:8000` by default), while host-local development can keep
+`NEXT_PUBLIC_API_BASE_URL=http://localhost:8000`.
 
 ## Feature flags
 
@@ -103,6 +172,13 @@ uv sync --extra all                     # everything
 
 Frontend and Admin feature visibility is gated by `NEXT_PUBLIC_FEATURE_*` vars
 which are baked into the Next.js bundle at build time (see `.env.example`).
+
+## Production readiness checks
+
+- `/healthz` is a lightweight liveness probe.
+- `/readyz` checks Postgres and Redis and reports `ready` or `degraded`.
+- `APP_ENV=production` rejects placeholder JWT secrets and requires secure auth cookies.
+- Optional integrations validate required secrets when their `FEATURE_*` flags are enabled outside tests.
 
 ## Multi-tenancy model
 
