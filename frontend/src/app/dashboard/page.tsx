@@ -8,6 +8,13 @@ import { logout, me, type User } from "@/lib/auth";
 import { listOrgs, type OrgSummary } from "@/lib/orgs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  EmptyState,
+  ErrorState,
+  FeatureBadge,
+  LoadingState,
+  PageHeader,
+} from "@/components/page-state";
 import type { ApiError } from "@/lib/api";
 
 export default function DashboardPage() {
@@ -42,18 +49,12 @@ export default function DashboardPage() {
 
   if (error) {
     return (
-      <main className="mx-auto max-w-2xl px-6 py-16">
-        <p className="text-sm text-destructive">{error}</p>
-      </main>
+      <ErrorState message={error} actionHref="/" actionLabel="Return home" />
     );
   }
 
   if (!user || !orgs) {
-    return (
-      <main className="mx-auto max-w-2xl px-6 py-16">
-        <p className="text-sm text-muted-foreground">Loading…</p>
-      </main>
-    );
+    return <LoadingState label="Loading organizations" />;
   }
 
   return (
@@ -61,58 +62,64 @@ export default function DashboardPage() {
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.25 }}
-      className="mx-auto max-w-3xl space-y-8 px-6 py-12"
+      className="mx-auto max-w-5xl space-y-8 px-6 py-12"
     >
-      <header className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-semibold tracking-tight">
-            Welcome, {user.full_name ?? user.email}
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Pick an organization or create a new one.
-          </p>
-        </div>
-        <Button onClick={handleLogout} variant="secondary">
-          Sign out
-        </Button>
-      </header>
+      <PageHeader
+        eyebrow="Tenant console"
+        title={`Welcome, ${user.full_name ?? user.email}`}
+        description="Pick an organization, create a fresh workspace, or use this screen as the first-run hub for a new SaaS."
+        actions={
+          <>
+            <Link
+              href="/orgs/new"
+              className="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90"
+            >
+              New organization
+            </Link>
+            <Button onClick={handleLogout} variant="secondary">
+              Sign out
+            </Button>
+          </>
+        }
+      />
 
-      <section className="space-y-3">
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
-            Your organizations
-          </h2>
-          <Link
-            href="/orgs/new"
-            className="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:opacity-90"
-          >
-            + New organization
-          </Link>
-        </div>
+      <section className="space-y-4">
+        <h2 className="text-sm font-semibold uppercase tracking-[0.24em] text-muted-foreground">
+          Your organizations
+        </h2>
 
         {orgs.length === 0 ? (
-          <Card>
-            <CardContent className="text-sm text-muted-foreground">
-              You haven&apos;t joined any organizations yet. Create one to get
-              started.
-            </CardContent>
-          </Card>
+          <EmptyState
+            title="No workspaces yet"
+            description="Create the first organization to try role-scoped auth, API keys, invitations, and audit-ready flows."
+            action={
+              <Link
+                href="/orgs/new"
+                className="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90"
+              >
+                Create organization
+              </Link>
+            }
+          />
         ) : (
-          <div className="grid gap-3">
+          <div className="grid gap-4 sm:grid-cols-2">
             {orgs.map((org) => (
               <Link key={org.id} href={`/orgs/${org.slug}`} className="block">
-                <Card className="cursor-pointer transition hover:bg-muted">
+                <Card className="group cursor-pointer transition hover:border-primary/50 hover:bg-muted/65">
                   <CardHeader className="flex flex-row items-start justify-between pb-0">
                     <div>
-                      <CardTitle className="text-lg">{org.name}</CardTitle>
-                      <p className="text-xs text-muted-foreground">
+                      <CardTitle className="text-xl">{org.name}</CardTitle>
+                      <p className="mt-1 font-mono text-xs text-muted-foreground">
                         {org.slug}
                       </p>
                     </div>
-                    <span className="rounded-full border border-border px-2 py-0.5 text-xs uppercase tracking-wider text-muted-foreground">
-                      {org.role}
-                    </span>
+                    <FeatureBadge>{org.role}</FeatureBadge>
                   </CardHeader>
+                  <CardContent className="pt-4 text-sm text-muted-foreground">
+                    <p>
+                      Open workspace <span className="ml-1">-&gt;</span>
+                    </p>
+                  </CardContent>
                 </Card>
               </Link>
             ))}
