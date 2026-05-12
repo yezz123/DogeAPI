@@ -13,6 +13,8 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from redis.asyncio import Redis
+from sqlalchemy import text
+from sqlalchemy.ext.asyncio import create_async_engine as create_ready_engine
 
 from dogeapi import __version__
 from dogeapi.auth.password_reset import router as password_reset_router
@@ -89,6 +91,35 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     async def healthz() -> dict[str, str]:
         return {"status": "ok", "version": __version__, "env": settings.APP_ENV}
 
+    @app.get("/readyz", tags=["meta"])
+    async def readyz() -> dict[str, str | bool]:
+        db_ok = False
+        redis_ok = False
+
+        engine = create_ready_engine(settings.DATABASE_URL, pool_pre_ping=True)
+        try:
+            async with engine.connect() as conn:
+                await conn.execute(text("select 1"))
+            db_ok = True
+        except Exception:
+            db_ok = False
+        finally:
+            await engine.dispose()
+
+        redis = Redis.from_url(settings.REDIS_URL, decode_responses=True)
+        try:
+            redis_ok = bool(await redis.ping())
+        except Exception:
+            redis_ok = False
+        finally:
+            await redis.aclose()
+
+        return {
+            "status": "ready" if db_ok and redis_ok else "degraded",
+            "db_ok": db_ok,
+            "redis_ok": redis_ok,
+        }
+
     @app.get("/", tags=["meta"])
     async def root() -> dict[str, str]:
         return {"name": settings.APP_NAME, "version": __version__}
@@ -123,8 +154,6 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         app.include_router(audit_router)
 
     if settings.FEATURE_RATE_LIMITING:
-        from redis.asyncio import Redis
-
         from dogeapi.rate_limit.middleware import RateLimitPerIPMiddleware
 
         # Build a shared Redis client for the middleware (separate from the

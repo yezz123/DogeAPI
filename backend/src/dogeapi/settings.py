@@ -15,7 +15,7 @@ from datetime import timedelta
 from functools import lru_cache
 from typing import Literal
 
-from pydantic import computed_field
+from pydantic import computed_field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 EnvName = Literal["development", "staging", "production", "test"]
@@ -64,7 +64,7 @@ class Settings(BaseSettings):
     FEATURE_HTTRACE: bool = False
 
     HTTRACE_API_KEY: str = ""
-    HTTRACE_SERVICE: str = "ai-template"
+    HTTRACE_SERVICE: str = "dogeapi"
     HTTRACE_SAMPLE_RATE: float = 0.1
 
     EMAIL_PROVIDER: EmailProvider = "smtp"
@@ -121,6 +121,53 @@ class Settings(BaseSettings):
     @property
     def is_production(self) -> bool:
         return self.APP_ENV == "production"
+
+    @model_validator(mode="after")
+    def validate_production_readiness(self) -> Settings:
+        """Fail fast when production runs with placeholder or unsafe config."""
+        if self.is_production:
+            if (
+                self.JWT_SECRET_KEY
+                in {
+                    "change-me",
+                    "change-me-in-production-please-use-a-long-random-string",
+                }
+                or len(self.JWT_SECRET_KEY) < 32
+            ):
+                raise ValueError("JWT_SECRET_KEY must be a strong production secret")
+            if not self.JWT_COOKIE_SECURE:
+                raise ValueError("JWT_COOKIE_SECURE must be true in production")
+        should_validate_integrations = self.APP_ENV != "test"
+
+        if should_validate_integrations and self.FEATURE_EMAIL_DELIVERY:
+            if self.EMAIL_PROVIDER == "resend" and not self.RESEND_API_KEY:
+                raise ValueError("RESEND_API_KEY is required when Resend email delivery is enabled")
+            if self.EMAIL_PROVIDER == "smtp" and self.SMTP_HOST != "localhost" and not self.SMTP_USER:
+                raise ValueError("SMTP_USER is required for non-local SMTP email delivery")
+
+        if should_validate_integrations and self.FEATURE_OAUTH:
+            has_google = self.OAUTH_GOOGLE_CLIENT_ID and self.OAUTH_GOOGLE_CLIENT_SECRET
+            has_github = self.OAUTH_GITHUB_CLIENT_ID and self.OAUTH_GITHUB_CLIENT_SECRET
+            if not (has_google or has_github):
+                raise ValueError("At least one OAuth provider must be configured when FEATURE_OAUTH=true")
+
+        if (
+            should_validate_integrations
+            and self.FEATURE_STRIPE
+            and (not self.STRIPE_API_KEY or not self.STRIPE_WEBHOOK_SECRET)
+        ):
+            raise ValueError("Stripe API key and webhook secret are required when FEATURE_STRIPE=true")
+
+        if should_validate_integrations and self.FEATURE_AI_CHAT and not self.LLM_GATEWAY_API_KEY:
+            raise ValueError("LLM_GATEWAY_API_KEY is required when FEATURE_AI_CHAT=true")
+
+        if should_validate_integrations and self.FEATURE_LOGFIRE and not self.LOGFIRE_TOKEN:
+            raise ValueError("LOGFIRE_TOKEN is required when FEATURE_LOGFIRE=true")
+
+        if should_validate_integrations and self.FEATURE_HTTRACE and not self.HTTRACE_API_KEY:
+            raise ValueError("HTTRACE_API_KEY is required when FEATURE_HTTRACE=true")
+
+        return self
 
 
 @lru_cache(maxsize=1)
