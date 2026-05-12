@@ -73,7 +73,7 @@ export default function AdminLoginPage() {
       >
         <Card>
           <CardHeader>
-            <p className="text-xs uppercase tracking-widest text-accent">
+            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-primary">
               Operator console
             </p>
             <CardTitle>Admin sign in</CardTitle>

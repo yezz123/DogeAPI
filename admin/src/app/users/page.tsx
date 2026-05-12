@@ -7,6 +7,12 @@ import { listUsers, type AdminUser } from "@/lib/admin";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import {
+  AdminPageHeader,
+  EmptyPanel,
+  InlineError,
+  StatusPill,
+} from "@/components/admin-state";
 import type { ApiError } from "@/lib/api";
 
 export default function UsersPage() {
@@ -16,6 +22,8 @@ export default function UsersPage() {
 
   async function reload() {
     try {
+      setError(null);
+      setUsers(null);
       setUsers(await listUsers({ email: filter || undefined }));
     } catch (err) {
       setError((err as ApiError).detail ?? "Failed to load");
@@ -35,12 +43,11 @@ export default function UsersPage() {
         transition={{ duration: 0.25 }}
         className="space-y-6"
       >
-        <header>
-          <h1 className="text-3xl font-semibold tracking-tight">Users</h1>
-          <p className="text-sm text-muted-foreground">
-            All registered accounts.
-          </p>
-        </header>
+        <AdminPageHeader
+          eyebrow="Identity"
+          title="Users"
+          description="Search accounts, check activation state, and confirm who can access the operator console."
+        />
 
         <form
           onSubmit={(e) => {
@@ -57,7 +64,7 @@ export default function UsersPage() {
           <Button type="submit">Search</Button>
         </form>
 
-        {error && <p className="text-sm text-destructive">{error}</p>}
+        {error && <InlineError message={error} />}
 
         <Card>
           <CardContent className="p-0">
@@ -65,6 +72,11 @@ export default function UsersPage() {
               <p className="px-6 py-4 text-sm text-muted-foreground">
                 Loading…
               </p>
+            ) : users.length === 0 ? (
+              <EmptyPanel
+                title="No matching users"
+                description="Try a broader email filter or create an account from the tenant app."
+              />
             ) : (
               <ul className="divide-y divide-border">
                 {users.map((u) => (
@@ -78,14 +90,13 @@ export default function UsersPage() {
                     </div>
                     <div className="flex gap-2">
                       {u.is_superadmin && (
-                        <span className="rounded-full bg-accent px-2 py-0.5 text-xs uppercase tracking-wider text-accent-foreground">
-                          Super
-                        </span>
+                        <StatusPill tone="warning">Super</StatusPill>
                       )}
                       {!u.is_active && (
-                        <span className="rounded-full border border-destructive px-2 py-0.5 text-xs uppercase tracking-wider text-destructive">
-                          Inactive
-                        </span>
+                        <StatusPill tone="danger">Inactive</StatusPill>
+                      )}
+                      {u.is_active && !u.is_superadmin && (
+                        <StatusPill tone="success">Active</StatusPill>
                       )}
                     </div>
                   </li>

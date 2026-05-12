@@ -7,6 +7,12 @@ import { listAuditLog, type AuditEntry } from "@/lib/admin";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import {
+  AdminPageHeader,
+  EmptyPanel,
+  InlineError,
+  StatusPill,
+} from "@/components/admin-state";
 import type { ApiError } from "@/lib/api";
 
 export default function AdminAuditLogPage() {
@@ -17,6 +23,8 @@ export default function AdminAuditLogPage() {
 
   async function reload() {
     try {
+      setError(null);
+      setEntries(null);
       setEntries(
         await listAuditLog({
           org_id: orgFilter || undefined,
@@ -41,14 +49,11 @@ export default function AdminAuditLogPage() {
         transition={{ duration: 0.25 }}
         className="space-y-6"
       >
-        <header>
-          <h1 className="text-3xl font-semibold tracking-tight">
-            Cross-tenant audit log
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Mutations recorded across every organization.
-          </p>
-        </header>
+        <AdminPageHeader
+          eyebrow="Audit"
+          title="Cross-tenant audit log"
+          description="Mutation events across every organization, with filters for incident response and operator review."
+        />
 
         <form
           onSubmit={(e) => {
@@ -70,7 +75,7 @@ export default function AdminAuditLogPage() {
           <Button type="submit">Filter</Button>
         </form>
 
-        {error && <p className="text-sm text-destructive">{error}</p>}
+        {error && <InlineError message={error} />}
 
         <Card>
           <CardContent className="p-0">
@@ -79,9 +84,10 @@ export default function AdminAuditLogPage() {
                 Loading…
               </p>
             ) : entries.length === 0 ? (
-              <p className="px-6 py-4 text-sm text-muted-foreground">
-                No matching entries.
-              </p>
+              <EmptyPanel
+                title="No matching entries"
+                description="Adjust the organization id or action filter to broaden the audit search."
+              />
             ) : (
               <ul className="divide-y divide-border">
                 {entries.map((entry) => (
@@ -90,7 +96,7 @@ export default function AdminAuditLogPage() {
                       <div>
                         <p className="font-medium">{entry.action}</p>
                         <p className="font-mono text-xs text-muted-foreground">
-                          {entry.method} {entry.path} → {entry.status_code}
+                          {entry.method} {entry.path} -&gt; {entry.status_code}
                         </p>
                         {entry.org_id && (
                           <p className="text-xs text-muted-foreground">
@@ -98,9 +104,16 @@ export default function AdminAuditLogPage() {
                           </p>
                         )}
                       </div>
-                      <time className="text-xs text-muted-foreground">
-                        {new Date(entry.created_at).toLocaleString()}
-                      </time>
+                      <div className="flex flex-col items-end gap-2">
+                        <StatusPill
+                          tone={entry.status_code >= 400 ? "danger" : "success"}
+                        >
+                          {entry.status_code}
+                        </StatusPill>
+                        <time className="text-xs text-muted-foreground">
+                          {new Date(entry.created_at).toLocaleString()}
+                        </time>
+                      </div>
                     </div>
                   </li>
                 ))}
