@@ -5,11 +5,11 @@ on:
     branches: [main]
     paths:
       - "backend/**"
-      - ".github/workflows/backend.yml"
+      - ".github/workflows/backend.yaml"
   pull_request:
     paths:
       - "backend/**"
-      - ".github/workflows/backend.yml"
+      - ".github/workflows/backend.yaml"
 
 defaults:
   run:

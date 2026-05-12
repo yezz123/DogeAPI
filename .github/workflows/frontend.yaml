@@ -5,11 +5,11 @@ on:
     branches: [main]
     paths:
       - "frontend/**"
-      - ".github/workflows/frontend.yml"
+      - ".github/workflows/frontend.yaml"
   pull_request:
     paths:
       - "frontend/**"
-      - ".github/workflows/frontend.yml"
+      - ".github/workflows/frontend.yaml"
 
 defaults:
   run:

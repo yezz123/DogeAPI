@@ -5,11 +5,11 @@ on:
     branches: [main]
     paths:
       - "admin/**"
-      - ".github/workflows/admin.yml"
+      - ".github/workflows/admin.yaml"
   pull_request:
     paths:
       - "admin/**"
-      - ".github/workflows/admin.yml"
+      - ".github/workflows/admin.yaml"
 
 defaults:
   run:
