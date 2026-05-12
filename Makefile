@@ -1,5 +1,7 @@
 .DEFAULT_GOAL := help
 SHELL := /usr/bin/env bash
+ENV_FILE := $(shell test -f .env && printf .env || printf .env.example)
+COMPOSE := docker compose --env-file $(ENV_FILE) -f infra/docker-compose.yml
 
 # ─── Helpers ──────────────────────────────────────────────────────────────
 .PHONY: help
@@ -42,40 +44,48 @@ dev-admin:  ## Run Next.js admin portal
 # ─── Docker compose ───────────────────────────────────────────────────────
 .PHONY: up
 up:  ## Start postgres + redis + mailpit (infra only; for local dev)
-	docker compose -f infra/docker-compose.yml up -d postgres redis mailpit
+	$(COMPOSE) up -d postgres redis mailpit
 
 .PHONY: stack-build
 stack-build:  ## Build all app images (backend + frontend + admin)
-	docker compose -f infra/docker-compose.yml build backend frontend admin
+	$(COMPOSE) build backend frontend admin nginx
 
 .PHONY: stack-up
 stack-up:  ## Start the full stack (infra + apps) end-to-end
-	docker compose -f infra/docker-compose.yml up -d
+	$(COMPOSE) up -d
 
 .PHONY: stack-logs
 stack-logs:  ## Tail all stack logs
-	docker compose -f infra/docker-compose.yml logs -f
+	$(COMPOSE) logs -f
 
 .PHONY: stack-ps
 stack-ps:  ## Show stack status
-	docker compose -f infra/docker-compose.yml ps
+	$(COMPOSE) ps
 
 .PHONY: down
 down:  ## Stop and remove containers
-	docker compose -f infra/docker-compose.yml down
+	$(COMPOSE) down
 
 .PHONY: nuke
 nuke:  ## Stop and remove containers + volumes (destroys data)
-	docker compose -f infra/docker-compose.yml down -v
+	$(COMPOSE) down -v
 
 .PHONY: logs
 logs:  ## Tail compose logs
-	docker compose -f infra/docker-compose.yml logs -f
+	$(COMPOSE) logs -f
 
 # ─── Database ─────────────────────────────────────────────────────────────
 .PHONY: migrate
 migrate:  ## Apply pending Alembic migrations
 	cd backend && uv run alembic upgrade head
+
+.PHONY: create-admin
+create-admin:  ## Create/promote a super-admin: make create-admin email=admin@example.com password=change-me
+	cd backend && uv run dogeapi admin create --email "$(email)" --password "$(password)" $(if $(name),--full-name "$(name)",) $(if $(update_password),--update-password,)
+
+.PHONY: stack-create-admin
+stack-create-admin:  ## Create/promote super-admin through Docker: make stack-create-admin email=admin@example.com password=change-me
+	ADMIN_EMAIL="$(email)" ADMIN_PASSWORD="$(password)" ADMIN_FULL_NAME="$(name)" $(COMPOSE) run --rm create-admin
 
 .PHONY: migrate-down
 migrate-down:  ## Rollback the latest Alembic migration
@@ -87,7 +97,7 @@ revision:  ## Create a new auto-generated migration: make revision m="add foo ta
 
 .PHONY: psql
 psql:  ## Open a psql shell
-	docker compose -f infra/docker-compose.yml exec postgres psql -U dogeapi -d dogeapi
+	$(COMPOSE) exec postgres psql -U dogeapi -d dogeapi
 
 # ─── Test / lint ──────────────────────────────────────────────────────────
 .PHONY: test

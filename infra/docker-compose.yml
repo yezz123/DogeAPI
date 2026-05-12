@@ -6,6 +6,8 @@ x-app-env: &app-env
   # explicit per-service `environment:` blocks below cover the values that
   # docker compose itself needs to wire the network.
   env_file:
+    - path: ../.env.example
+      required: true
     - path: ../.env
       required: false
   restart: unless-stopped
@@ -14,11 +16,19 @@ x-backend-build: &backend-build
   context: ../backend
   dockerfile: Dockerfile
 
+x-backend-network-env: &backend-network-env
+  POSTGRES_HOST: postgres
+  DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-dogeapi}:${POSTGRES_PASSWORD:-dogeapi}@postgres:5432/${POSTGRES_DB:-dogeapi}
+  DATABASE_URL_SYNC: postgresql+psycopg://${POSTGRES_USER:-dogeapi}:${POSTGRES_PASSWORD:-dogeapi}@postgres:5432/${POSTGRES_DB:-dogeapi}
+  REDIS_URL: redis://redis:6379/0
+  SMTP_HOST: mailpit
+  SMTP_PORT: "1025"
+
 # Public env vars baked into the Next.js bundles at build time. Compose
 # substitutes from the shell or `.env` in this directory; defaults below
-# match `.env.sample`.
+# match `.env.example`.
 x-frontend-public-args: &frontend-public-args
-  NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-http://localhost:8000}
+  NEXT_PUBLIC_API_BASE_URL: ${INTERNAL_API_BASE_URL:-http://backend:8000}
   NEXT_PUBLIC_APP_NAME: ${NEXT_PUBLIC_APP_NAME:-AI Template}
   NEXT_PUBLIC_FEATURE_OAUTH: ${NEXT_PUBLIC_FEATURE_OAUTH:-false}
   NEXT_PUBLIC_FEATURE_MAGIC_LINK: ${NEXT_PUBLIC_FEATURE_MAGIC_LINK:-false}
@@ -90,10 +100,27 @@ services:
       postgres:
         condition: service_healthy
     environment:
-      POSTGRES_HOST: postgres
-      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-dogeapi}:${POSTGRES_PASSWORD:-dogeapi}@postgres:5432/${POSTGRES_DB:-dogeapi}
-      DATABASE_URL_SYNC: postgresql+psycopg://${POSTGRES_USER:-dogeapi}:${POSTGRES_PASSWORD:-dogeapi}@postgres:5432/${POSTGRES_DB:-dogeapi}
+      <<: *backend-network-env
     command: ["alembic", "upgrade", "head"]
+
+  create-admin:
+    <<: *app-env
+    profiles: ["tools"]
+    build: *backend-build
+    image: dogeapi-backend:latest
+    pull_policy: never
+    restart: "no"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    environment:
+      <<: *backend-network-env
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+      ADMIN_FULL_NAME: ${ADMIN_FULL_NAME:-}
+    command: ["dogeapi", "admin", "create"]
 
   backend:
     <<: *app-env
@@ -110,12 +137,7 @@ services:
       migrate:
         condition: service_completed_successfully
     environment:
-      POSTGRES_HOST: postgres
-      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-dogeapi}:${POSTGRES_PASSWORD:-dogeapi}@postgres:5432/${POSTGRES_DB:-dogeapi}
-      DATABASE_URL_SYNC: postgresql+psycopg://${POSTGRES_USER:-dogeapi}:${POSTGRES_PASSWORD:-dogeapi}@postgres:5432/${POSTGRES_DB:-dogeapi}
-      REDIS_URL: redis://redis:6379/0
-      SMTP_HOST: mailpit
-      SMTP_PORT: "1025"
+      <<: *backend-network-env
       APP_BASE_URL: ${APP_BASE_URL:-http://backend:8000}
     ports:
       - "8000:8000"
@@ -144,7 +166,7 @@ services:
       context: ../admin
       dockerfile: Dockerfile
       args:
-        NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-http://localhost:8000}
+        NEXT_PUBLIC_API_BASE_URL: ${INTERNAL_API_BASE_URL:-http://backend:8000}
         NEXT_PUBLIC_APP_NAME: ${NEXT_PUBLIC_APP_NAME_ADMIN:-AI Template Admin}
     image: dogeapi-admin:latest
     pull_policy: never
@@ -155,6 +177,21 @@ services:
       NEXT_PUBLIC_API_BASE_URL: http://backend:8000
     ports:
       - "3001:3001"
+
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    depends_on:
+      frontend:
+        condition: service_started
+      admin:
+        condition: service_started
+      backend:
+        condition: service_healthy
+    ports:
+      - "${NGINX_PORT:-8080}:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
 
 volumes:
   postgres_data:
